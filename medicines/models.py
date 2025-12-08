@@ -2,6 +2,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
+from django.utils import timezone
+import random
+import string
 
 FREQUENCY_CHOICES = [
     ("DAILY", "Daily"),
@@ -84,3 +87,62 @@ class GoogleCredentials(models.Model):
 
     def __str__(self):
         return f"Google credentials for {self.user.username}"
+    
+class OTP(models.Model):
+    """Stores one-time passwords for email verification."""
+    email = models.EmailField(unique=True)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # OTP should expire quickly, e.g., 5 minutes
+    expiry_time = models.DateTimeField() 
+    
+    def save(self, *args, **kwargs):
+        # Set expiry time before saving (e.g., 5 minutes from now)
+        if not self.id:
+            # We use timezone.now() + 5 minutes 
+            self.expiry_time = timezone.now() + timezone.timedelta(minutes=5)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        """Check if the OTP is still within its validity period."""
+        return timezone.now() < self.expiry_time
+
+    @classmethod
+    def generate_otp(cls):
+        """Generates a 6-digit numeric OTP."""
+        return ''.join(random.choices(string.digits, k=6))
+
+    def __str__(self):
+        return f"OTP for {self.email}: {self.otp_code}"
+    
+# Role definition
+ROLES = (
+    ('user', 'User'),
+    ('doctor', 'Doctor'),
+    ('admin', 'Admin'),
+)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    role = models.CharField(max_length=10, choices=ROLES, default='user')
+    photo = models.ImageField(upload_to='doctor_photos/', blank=True, null=True)
+    specialty = models.CharField(max_length=100, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.role})"
+
+class Appointment(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    )
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patient_appointments')
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctor_appointments')
+    problem = models.TextField()
+    patient_details = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+

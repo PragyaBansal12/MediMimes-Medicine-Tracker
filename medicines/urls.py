@@ -38,4 +38,19 @@ urlpatterns = [
     
     # Chatbot
     path('chatbot/', views.chatbot_view, name='chatbot_view'),
+
+    # OTP Signup Flow
+    path('signup/request/', views.otp_signup_request, name='otp_signup_request'),
+    path('signup/verify/', views.otp_verify, name='otp_verify'),
+
+    path('doctors/', views.doctor_list, name='doctor_list'),
+    path('book-now/<int:doctor_id>/', views.book_appointment, name='book_now'),
+
+    path('doctor/dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
+    path('doctor/respond/<int:appt_id>/<str:action>/', views.respond_to_request, name='respond'),
+    path('logout/', views.logout_view, name='logout'), # Essential for the Logout button
+
+    path('my-requests/', views.patient_requests, name='patient_requests'),
+
+    path('overwatch/', views.admin_overwatch, name='overwatch'),
 ]

@@ -15,7 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=True, cast=bool) # Switched to using config() for better environment handling
 ALLOWED_HOSTS = ['medicine-tracker-1-wvl2.onrender.com']
-
+# Allow local addresses only when in DEBUG mode
+if DEBUG:
+    ALLOWED_HOSTS.append('127.0.0.1')
+    ALLOWED_HOSTS.append('localhost')
 # --- START OF LOCAL FIX FOR OAUTH ---
 # The oauthlib library requires HTTPS, but for local development (http://127.0.0.1:8000), 
 # we must temporarily bypass this security check to prevent InsecureTransportError. 
@@ -158,3 +161,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -------------------------------
+# EMAIL SETTINGS (FOR OTP)
+# -------------------------------
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

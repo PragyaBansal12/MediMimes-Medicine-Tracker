@@ -1,11 +1,10 @@
 {% load static %}
-{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request OTP - MediMimes</title>
+    <title>Verify OTP - MediMimes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -280,14 +279,7 @@
         .divider::after {
             margin-left: 1rem;
         }
-
-        .google-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
+        
         /* Responsive */
         @media (max-width: 480px) {
             .signup-container {
@@ -312,49 +304,47 @@
 
     <div class="signup-container">
         <div class="icon-wrapper">
-            <i class="fas fa-magic magic-icon"></i> 
+            <i class="fas fa-lock magic-icon"></i>
         </div>
         
         <h1 class="welcome-title text-center display-5 fw-bold">
-            Start Your Magic!
+            Enter the Code
         </h1>
         
-        <p class="text-center text-muted mb-4">Enter your email to receive a verification code.</p>
+        {% if email %}
+            <p class="text-center text-muted mb-4">A code was sent to <strong>{{ email }}</strong>. It expires in 5 minutes.</p>
+        {% else %}
+             <p class="text-center text-muted mb-4">Please enter the 6-digit verification code below.</p>
+        {% endif %}
 
         {% if messages %}
         <div class="mb-3">
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} text-center" role="alert" style="border-radius: 15px; font-weight: 600;">
-                <i class="fas fa-info-circle me-1"></i> {{ message }}
+                <i class="fas fa-exclamation-triangle me-1"></i> {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
-        
+
         <form method="post">
             {% csrf_token %}
             
-            <input type="email" name="email" placeholder="📧 Your Email Address" class="form-control-magical form-control" required>
+            <input type="text" name="otp_code" placeholder="🔑 6-Digit Code" 
+                   class="form-control-magical form-control text-center" 
+                   maxlength="6" pattern="\d{6}" required>
             
             <button type="submit" class="btn btn-success-magical btn-magical">
-                <i class="fas fa-paper-plane me-2"></i>Send Verification Code
+                <i class="fas fa-check-circle me-2"></i>Verify and Complete Signup
             </button>
         </form>
 
         <div class="text-center mb-3">
-            <a href="{% url 'login' %}" class="link-magical">
-                <i class="fas fa-sign-in-alt me-1"></i>Already have magic? Login
+            <a href="{% url 'otp_signup_request' %}" class="link-magical">
+                <i class="fas fa-redo-alt me-1"></i>Didn't get it? Request a new code.
             </a>
         </div>
-
-        <div class="divider">
-            OR
-        </div>
-
-        <a href="{% provider_login_url 'google' %}" class="btn btn-google-magical btn-magical">
-            <img src="{% static 'images/google.png' %}" alt="Google" class="google-icon">
-            Sign up with Google
-        </a>
+        
     </div>
 
     <script>
@@ -384,6 +374,5 @@
             });
         });
     </script>
-
 </body>
 </html>

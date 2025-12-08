@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Healer Sanctum - {{ user.username }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --disney-blue: #1a3e6f; --disney-gold: #ffd700; --disney-purple: #6a0dad; }
+        body { background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%); min-height: 100vh; font-family: 'Quicksand', sans-serif; color: #fff; }
+        .sanctum-container { background: rgba(255, 255, 255, 0.95); border-radius: 25px; border: 3px solid var(--disney-gold); color: #333; margin: 2rem 0; padding: 2rem; }
+        .profile-card { background: var(--disney-blue); color: #fff; border-radius: 20px; padding: 1.5rem; border: 2px solid var(--disney-gold); }
+        .history-table { border-radius: 15px; overflow: hidden; background: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h1 class="welcome-title" style="color: #fff;">Healer Portal</h1>
+            <a href="{% url 'logout' %}" class="btn btn-outline-light rounded-pill">
+                <i class="fas fa-sign-out-alt me-1"></i>Secure Logout
+            </a>
+        </div>
+
+        <div class="sanctum-container">
+            <div class="profile-card mb-4 d-flex align-items-center">
+                {% if doctor_profile.photo %}
+                    <img src="{{ doctor_profile.photo.url }}" class="rounded-circle border border-2 border-warning me-3" width="80" height="80">
+                {% else %}
+                    <i class="fas fa-user-md fa-4x me-3"></i>
+                {% endif %}
+                <div>
+                    <h3>Dr. {{ user.username }}</h3>
+                    <p class="mb-0 text-warning">{{ doctor_profile.specialty|title }}</p>
+                </div>
+            </div>
+
+            <h4 class="text-dark mb-3">Incoming Audiences</h4>
+            {% for appt in requests %}
+            <div class="card mb-3 p-3 shadow-sm border-info">
+                <h5>Patient: {{ appt.patient.username }}</h5>
+                <p><strong>Magic Concern:</strong> {{ appt.problem }}</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'respond' appt.id 'accept' %}" class="btn btn-success btn-sm rounded-pill">Accept Magic</a>
+                    <a href="{% url 'respond' appt.id 'reject' %}" class="btn btn-danger btn-sm rounded-pill">Reject</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No pending magic requested.</p>
+            {% endfor %}
+
+            <hr class="my-4">
+
+            <h4 class="text-dark mb-3">Systematic Patient History</h4>
+            <div class="table-responsive history-table border">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Problem Stored</th>
+                            <th>Details in DB</th>
+                            <th>Confirmed On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr>
+                            <td><strong>{{ record.patient.username }}</strong></td>
+                            <td>{{ record.problem|truncatechars:30 }}</td>
+                            <td><small>{{ record.patient_details }}</small></td>
+                            <td class="text-muted">{{ record.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-3">Database history is empty.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

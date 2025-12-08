@@ -1,0 +1,429 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if med %}Edit{% else %}Add{% endif %} Medication</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+        :root {
+            --disney-blue: #1a3e6f;
+            --disney-gold: #ffd700;
+            --disney-red: #d4002a;
+            --disney-purple: #6a0dad;
+            --disney-silver: #c0c0c0;
+            --magic-sparkle: #b19cd9;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%);
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 0;
+        }
+
+        /* Magical sparkle effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
+                radial-gradient(circle at 40% 40%, rgba(177, 156, 217, 0.2) 1px, transparent 1px);
+            background-size: 100px 100px, 150px 150px, 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+            animation: sparkle 20s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(255, 215, 0, 0.2);
+            border: 3px solid var(--disney-gold);
+            position: relative;
+            overflow: hidden;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                var(--disney-blue), 
+                var(--disney-purple), 
+                var(--disney-red), 
+                var(--disney-gold));
+            z-index: 10;
+        }
+
+        .welcome-title {
+            background: linear-gradient(45deg, var(--disney-blue), var(--disney-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: inline-block;
+        }
+
+        .welcome-title::after {
+            content: '✨';
+            position: absolute;
+            right: -40px;
+            top: 0;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-card {
+            background: transparent;
+            border: none;
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--disney-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control-magical {
+            border: 2px solid var(--disney-silver);
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control-magical:focus {
+            border-color: var(--disney-purple);
+            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .form-select-magical {
+            border: 2px solid var(--disney-silver);
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        }
+
+        .form-select-magical:focus {
+            border-color: var(--disney-purple);
+            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-magical {
+            background: linear-gradient(135deg, var(--disney-purple) 0%, var(--disney-blue) 100%);
+            border: 2px solid var(--disney-gold);
+            color: white;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-magical::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-magical:hover::before {
+            left: 100%;
+        }
+
+        .btn-magical:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success-magical {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: 2px solid var(--disney-gold);
+            color: white;
+        }
+
+        .btn-secondary-magical {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            border: 2px solid var(--disney-silver);
+            color: white;
+        }
+
+        .time-field-group {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid var(--disney-silver);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-input {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .time-input:focus {
+            border-color: var(--disney-purple);
+            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .magic-icon {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--disney-gold), var(--disney-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .help-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <!-- Header -->
+            <div class="text-center pt-4">
+                <div class="icon-wrapper">
+                    <i class="fas fa-pills magic-icon"></i>
+                </div>
+                <h1 class="welcome-title display-5 fw-bold mb-3">
+                    {% if med %}Edit{% else %}Add{% endif %} Medication
+                </h1>
+                <p class="text-muted">{% if med %}Update your magical potion{% else %}Create your magical potion{% endif %} ✨</p>
+            </div>
+
+            <!-- Form -->
+            <div class="form-card">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Pill Name -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-tag me-2"></i>Pill Name
+                        </label>
+                        <input type="text" class="form-control-magical form-control" 
+                               name="pill_name" value="{{ med.pill_name|default:'' }}" 
+                               placeholder="Enter pill name" required>
+                        <div class="help-text">What's the name of your magical potion?</div>
+                    </div>
+
+                    <!-- Dosage -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-balance-scale me-2"></i>Dosage
+                        </label>
+                        <input type="number" class="form-control-magical form-control" 
+                               name="dosage" value="{{ med.dosage|default:'' }}" 
+                               min="1" placeholder="Enter dosage" required>
+                        <div class="help-text">How much should you take each time?</div>
+                    </div>
+
+                    <!-- Frequency -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-sync-alt me-2"></i>Frequency
+                        </label>
+                        <select class="form-select-magical form-select" name="frequency_type" id="frequency_type">
+                            <option value="DAILY" {% if not med or med.frequency_type == "DAILY" %}selected{% endif %}>
+                                📅 Daily
+                            </option>
+                            <option value="WEEKLY" disabled>📊 Weekly (coming soon)</option>
+                            <option value="CUSTOM" disabled>⚡ Custom (coming soon)</option>
+                        </select>
+                        <div class="help-text">How often do you need to take this?</div>
+                    </div>
+
+                    <!-- Times per day -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-clock me-2"></i>Times per day
+                        </label>
+                        <input type="number" class="form-control-magical form-control" 
+                               id="times_per_day" name="times_per_day" 
+                               value="{% if med %}{{ med.times|length }}{% else %}1{% endif %}" 
+                               min="1" max="5" required>
+                        <div class="help-text">How many times a day? (1-5 times)</div>
+                    </div>
+
+                    <!-- Dynamic time inputs -->
+                    <div class="time-field-group">
+                        <label class="form-label">
+                            <i class="fas fa-hourglass-half me-2"></i>Set Times
+                        </label>
+                        <div id="time-fields" class="mt-3"></div>
+                        <div class="help-text">Set the specific times for each dose</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-success-magical btn-magical me-3">
+                            <i class="fas fa-save me-2"></i>
+                            {% if med %}Update Potion{% else %}Create Potion{% endif %}
+                        </button>
+                        <a href="{% url 'med_list' %}" class="btn btn-secondary-magical btn-magical">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# CRITICAL FIX: Pass the existing times list safely as JSON #}
+    <script src="{% static 'medicines/js/notifications.js' %}" defer></script>
+    <script id="initial-times-data" type="application/json">
+        {{ med.times|default:"[]"|safe }}
+    </script>
+
+    <script>
+        // existing time data
+        const initialTimesElement = document.getElementById('initial-times-data');
+        let initialTimesData = []; 
+        
+        if (initialTimesElement) {
+            const jsonText = initialTimesElement.textContent.trim();
+            
+            try {
+                if (jsonText && jsonText !== '[]' && jsonText.startsWith('[')) {
+                    initialTimesData = JSON.parse(jsonText);
+                }
+            } catch (e) {
+                if (jsonText && jsonText.startsWith('[') && jsonText.endsWith(']')) {
+                    initialTimesData = jsonText
+                        .substring(1, jsonText.length - 1) 
+                        .split(',')
+                        .map(item => item.trim().replace(/['"]/g, '')) 
+                        .filter(item => item.length > 0);
+                }
+            }
+        }
+
+        // saved data or current data 
+        function renderTimeFields(count, currentValues = []) {
+            const container = document.getElementById("time-fields");
+            container.innerHTML = "";
+            
+            count = Math.min(5, Math.max(1, count));
+            
+            for (let i = 0; i < count; i++) {
+                const div = document.createElement("div");
+                div.className = "mb-3";
+                
+                const label = document.createElement("label");
+                label.className = "form-label small";
+                label.textContent = `Time ${i + 1}`;
+                
+                const input = document.createElement("input");
+                input.type = "time";
+                input.name = "times";
+                input.className = "form-control time-input";
+                input.required = true;
+                
+                // Use temporary cached user input (if count was just changed)
+                if (currentValues.length > i) {
+                    input.value = currentValues[i];
+                } 
+                // Use permanent saved DB data (only on page load)
+                else if (i < initialTimesData.length) {
+                    input.value = initialTimesData[i];
+                } else {
+                    input.value = ""; 
+                }
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+        }
+
+        // Initial Render (on page load)
+        const timesPerDayInput = document.getElementById("times_per_day");
+        let initialCount = parseInt(timesPerDayInput.value) || 1;
+        
+        renderTimeFields(initialCount);
+
+        // Re-render on manual change
+        timesPerDayInput.addEventListener("change", function() {
+            let newCount = parseInt(this.value) || 1;
+            
+            // Get all CURRENTLY entered time values BEFORE redrawing/clearing
+            const currentInputs = document.querySelectorAll('#time-fields input[name="times"]');
+            let currentTimes = Array.from(currentInputs).map(input => input.value);
+            initialTimesData = []; 
+            renderTimeFields(newCount, currentTimes);
+        });
+
+        // Add input validation
+        timesPerDayInput.addEventListener('input', function() {
+            let value = parseInt(this.value);
+            if (value < 1) this.value = 1;
+            if (value > 5) this.value = 5;
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

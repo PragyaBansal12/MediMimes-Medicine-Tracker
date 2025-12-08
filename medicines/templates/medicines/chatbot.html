@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MediMimes Assistant</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body {
+        background: #121212;        /* Sleek black look */
+        color: #f1f1f1;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card {
+        background: #1e1e1e;
+        border: 1px solid #333;
+        color: #eaeaea;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        background: #2a2a2a;
+    }
+
+    .chat-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        margin-top: 10px;
+    }
+
+    .chat-bubble-user {
+        background: #0066ff;
+        padding: 12px 16px;
+        border-radius: 14px;
+        max-width: 70%;
+        margin-left: auto;
+        margin-bottom: 12px;
+        color: white;
+    }
+
+    .chat-bubble-bot {
+        background: #1f1f1f;
+        padding: 12px 16px;
+        border-radius: 14px;
+        max-width: 70%;
+        margin-right: auto;
+        margin-bottom: 12px;
+        border: 1px solid #333;
+    }
+
+    /* FLOATING INPUT BAR */
+    #chatInputBar {
+        position: sticky;
+        bottom: 0;
+        background: #121212;
+        padding: 12px 0;
+        border-top: 1px solid #2b2b2b;
+    }
+
+    .form-control {
+        background: #1e1e1e;
+        border: 1px solid #444;
+        color: #fff;
+    }
+    .form-control:focus {
+        background: #1e1e1e;
+        color: white;
+        border-color: #666;
+    }
+
+    .input-group-text {
+        background: #1e1e1e;
+        border: 1px solid #444;
+        color: #bbb;
+    }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+<nav class="navbar navbar-dark bg-dark px-3 shadow-sm">
+    <span class="navbar-brand">🩺 MediMimes Assistant</span>
+    <button id="newChatBtn" class="btn btn-outline-light btn-sm">
+        ✨ New Chat
+    </button>
+</nav>
+
+<!-- INTRO SECTION -->
+<div id="introSection" class="text-center mt-4">
+    <h4 class="fw-bold">Hello! I'm your MediMimes AI Assistant</h4>
+    <p class="text-muted">Ask anything about symptoms, medications, adherence or general health.</p>
+
+    <div class="container">
+        <div class="row g-2 justify-content-center">
+            <div class="col-5">
+                <div class="card p-3 action-card text-center" data-prompt="What is ibuprofen used for?">💊 Medication Info</div>
+            </div>
+            <div class="col-5">
+                <div class="card p-3 action-card text-center" data-prompt="Log my headache symptoms">🩺 Symptom Log</div>
+            </div>
+            <div class="col-5 mt-2">
+                <div class="card p-3 action-card text-center" data-prompt="Did I miss any dose today?">⏱️ Adherence</div>
+            </div>
+            <div class="col-5 mt-2">
+                <div class="card p-3 action-card text-center" data-prompt="Explain diabetes simply">📘 Health Education</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHAT AREA -->
+<div id="chatArea" class="chat-container"></div>
+
+<!-- INPUT BAR -->
+<div id="chatInputBar" class="container">
+    <div class="input-group">
+        <input type="text" id="userInput" class="form-control" placeholder="Ask anything..." />
+        <span class="input-group-text">
+            <i class="bi bi-mic fs-4" id="micButton" role="button"></i>
+        </span>
+        <button class="btn btn-primary" id="sendBtn">
+            <i class="bi bi-send-fill"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+/* ------------------------------------------
+   CSRF TOKEN HANDLING (Required for Django)
+-------------------------------------------*/
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+
+// ------------------------------------------------
+// Chatbot UI + Logic
+// ------------------------------------------------
+const chatArea = document.getElementById("chatArea");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+const introSection = document.getElementById("introSection");
+const newChatBtn = document.getElementById("newChatBtn");
+
+let conversationHistory = [];
+const MAX_MEMORY = 6;
+
+function addBotMessage(text) {
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble-bot";
+    bubble.innerText = text;
+    chatArea.appendChild(bubble);
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addUserMessage(text) {
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble-user";
+    bubble.innerText = text;
+    chatArea.appendChild(bubble);
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function truncateMemory() {
+    if (conversationHistory.length > MAX_MEMORY) {
+        conversationHistory = conversationHistory.slice(-MAX_MEMORY);
+    }
+}
+
+async function sendMessage(message) {
+    if (!message.trim()) return;
+
+    introSection.style.display = "none";
+
+    addUserMessage(message);
+    conversationHistory.push({ user: message });
+    truncateMemory();
+
+    addBotMessage("Thinking...");
+
+    const payload = {
+        message: message,
+        user_id: USER_ID,
+        context: { history: conversationHistory }
+    };
+
+    try {
+        const res = await fetch("/chat/", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken     
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        chatArea.removeChild(chatArea.lastChild); // remove "Thinking..."
+
+        addBotMessage(data.response || "Something went wrong.");
+        conversationHistory.push({ bot: data.response });
+        truncateMemory();
+
+    } catch (error) {
+        chatArea.removeChild(chatArea.lastChild);
+        addBotMessage("Error: Could not reach server.");
+    }
+}
+
+
+// ------------------------------------------------
+// EVENTS
+// ------------------------------------------------
+sendBtn.onclick = () => {
+    sendMessage(userInput.value);
+    userInput.value = "";
+};
+
+userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendBtn.click();
+});
+
+// Action Cards
+document.querySelectorAll(".action-card").forEach(card => {
+    card.onclick = () => {
+        userInput.value = card.dataset.prompt;
+        sendBtn.click();
+    };
+});
+
+// New Chat
+newChatBtn.onclick = () => {
+    conversationHistory = [];
+    chatArea.innerHTML = "";
+    introSection.style.display = "block";
+};
+
+// Microphone Mock
+document.getElementById("micButton").onclick = () => {
+    alert("🎤 Voice input coming soon!");
+};
+
+const USER_ID = "{{ request.user.id }}";
+</script>
+
+
+</body>
+</html>

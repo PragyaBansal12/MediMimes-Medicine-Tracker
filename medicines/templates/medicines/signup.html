@@ -1,0 +1,453 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - MediMimes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+        :root {
+            --disney-blue: #1a3e6f;
+            --disney-gold: #ffd700;
+            --disney-red: #d4002a;
+            --disney-purple: #6a0dad;
+            --disney-silver: #c0c0c0;
+            --magic-sparkle: #b19cd9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%);
+            color: #fff;
+            position: relative;
+        }
+
+        /* Magical sparkle effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
+                radial-gradient(circle at 40% 40%, rgba(177, 156, 217, 0.2) 1px, transparent 1px);
+            background-size: 100px 100px, 150px 150px, 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+            animation: sparkle 20s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        /* Particle background */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-300px) scale(1.2);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Signup Container */
+        .signup-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(255, 215, 0, 0.2);
+            border: 3px solid var(--disney-gold);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 450px;
+            padding: 2.5rem;
+            animation: fadeIn 1s ease;
+        }
+
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                var(--disney-blue), 
+                var(--disney-purple), 
+                var(--disney-red), 
+                var(--disney-gold));
+            z-index: 10;
+            border-radius: 25px 25px 0 0;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .welcome-title {
+            background: linear-gradient(45deg, var(--disney-blue), var(--disney-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-title::after {
+            content: '✨';
+            position: absolute;
+            right: -35px;
+            top: 0;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .icon-wrapper {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .magic-icon {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--disney-gold), var(--disney-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-control-magical {
+            border: 2px solid var(--disney-silver);
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .form-control-magical:focus {
+            border-color: var(--disney-purple);
+            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-magical {
+            background: linear-gradient(135deg, var(--disney-purple) 0%, var(--disney-blue) 100%);
+            border: 2px solid var(--disney-gold);
+            color: white;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .btn-magical::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-magical:hover::before {
+            left: 100%;
+        }
+
+        .btn-magical:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success-magical {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: 2px solid var(--disney-gold);
+            color: white;
+        }
+
+        .btn-login-magical {
+            background: transparent;
+            border: 2px solid var(--disney-purple);
+            color: var(--disney-purple);
+        }
+
+        .btn-login-magical:hover {
+            background: var(--disney-purple);
+            color: white;
+        }
+
+        .link-magical {
+            color: var(--disney-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .link-magical:hover {
+            color: var(--disney-purple);
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--disney-silver);
+            font-weight: 600;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 2px solid var(--disney-silver);
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
+        }
+
+        /* .messages {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .messages li {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 15px;
+            margin-bottom: 0.5rem;
+            border: 2px solid #ffd700;
+            animation: fadeInMsg 0.5s ease;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInMsg {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        } */
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .signup-container {
+                width: 95%;
+                padding: 2rem 1.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+            
+            .welcome-title::after {
+                right: -30px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Background -->
+    <div class="particles"></div>
+
+    <!-- Signup Container -->
+    <div class="signup-container">
+        <div class="icon-wrapper">
+            <i class="fas fa-user-plus magic-icon"></i>
+        </div>
+        
+        <h1 class="welcome-title text-center display-5 fw-bold">
+            Join the Magic!
+        </h1>
+        
+        <p class="text-center text-muted mb-4">Start your magical medication journey today ✨</p>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <input type="text" name="username" placeholder="👤 Choose a Username" class="form-control-magical form-control" required>
+            
+            <input type="password" name="password" placeholder="🔒 Create a Password" class="form-control-magical form-control" required id="password-input">
+
+            <button type="submit" class="btn btn-success-magical btn-magical">
+                <i class="fas fa-magic me-2"></i>Create Magical Account
+            </button>
+        </form>
+
+        <div class="text-center mb-3">
+            <a href="{% url 'login' %}" class="link-magical">
+                <i class="fas fa-sign-in-alt me-1"></i>Already have magic? Login
+            </a>
+        </div>
+
+        <div class="divider">
+            OR
+        </div>
+
+        <a href="{% provider_login_url 'google' %}" class="btn btn-google-magical btn-magical">
+            <img src="{% static 'images/google.png' %}" alt="Google" class="google-icon">
+            Sign up with Google
+        </a>
+
+        <!-- {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li><i class="fas fa-exclamation-triangle me-2"></i>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} -->
+    </div>
+
+    <script>
+        // Generate magical particles
+        const particleContainer = document.querySelector('.particles');
+        for (let i = 0; i < 30; i++) {
+            const div = document.createElement('div');
+            div.classList.add('particle');
+            const size = Math.random() * 8 + 4; // 4-12px
+            div.style.width = div.style.height = size + 'px';
+            div.style.top = Math.random() * 100 + '%';
+            div.style.left = Math.random() * 100 + '%';
+            div.style.animationDuration = (Math.random() * 10 + 5) + 's';
+            div.style.opacity = Math.random() * 0.4 + 0.2;
+            div.style.background = `rgba(${Math.random() * 55 + 200}, ${Math.random() * 55 + 200}, 255, 0.3)`;
+            particleContainer.appendChild(div);
+        }
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('password-input');
+        const strengthText = document.getElementById('strength-text');
+        const strengthFill = document.getElementById('strength-fill');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            let color = '#dc3545';
+            let text = 'Weak';
+
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/\d/)) strength += 25;
+            if (password.match(/[^a-zA-Z\d]/)) strength += 25;
+
+            if (strength >= 75) {
+                color = '#28a745';
+                text = 'Strong';
+            } else if (strength >= 50) {
+                color = '#ffc107';
+                text = 'Medium';
+            } else if (strength >= 25) {
+                color = '#fd7e14';
+                text = 'Fair';
+            }
+
+            strengthFill.style.width = strength + '%';
+            strengthFill.style.background = color;
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+        });
+
+        // Add focus effects to form inputs
+        document.querySelectorAll('.form-control-magical').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+
+</body>
+</html>

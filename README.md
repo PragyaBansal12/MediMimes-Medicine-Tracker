@@ -273,10 +273,11 @@ flowchart TD
 ---
 ### Future Improvements
 
--adding session memory to chatbot
--multi-intent messages in chatbot 
--critical notifications choice for patient for nudge notifications 
+- adding session memory to chatbot
+- multi-intent messages in chatbot 
+- critical notifications choice for patient for nudge notifications 
 -map based doctor recommendation system
 -trend analysis for patient in dashboard (present in chatbot)
 -payment gateway for appointment and premium feature access
+
 

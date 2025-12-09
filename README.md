@@ -155,7 +155,8 @@ It not only reminds users to take medicines, but also conversational support. //
 
 ---
 ### Database Schema
-<img width="1034" height="1926" alt="SystemArchitecture" src="https://github.com/user-attachments/assets/f128056b-3219-4d27-b105-d2e60491615f" />
+<img width="1114" height="3107" alt="diagram-export-12-9-2025-3_10_20-PM" src="https://github.com/user-attachments/assets/0e3909f2-7a61-46be-b246-a529926fe6ce" />
+
 
 ---
 
@@ -279,5 +280,6 @@ flowchart TD
 -map based doctor recommendation system
 -trend analysis for patient in dashboard (present in chatbot)
 -payment gateway for appointment and premium feature access
+
 
 

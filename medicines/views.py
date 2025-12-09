@@ -32,6 +32,20 @@ from chatbot import get_chatbot_response
 
 from .models import UserProfile, Appointment, User
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import logging
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+
+
+logger = logging.getLogger(__name__)
+
 
 # ===========================
 # INTERNAL HELPER FUNCTIONS (UPDATED)
@@ -1000,4 +1014,289 @@ def admin_overwatch(request):
     all_appointments = Appointment.objects.all().order_by('-created_at')
     
     return render(request, 'medicines/admin_overwatch.html', {'appointments': all_appointments})
+
+from .models import Symptom 
+@login_required
+@require_http_methods(["GET"])
+def get_user_symptoms_api(request):
+    try:
+        user = request.user
+        days = int(request.GET.get('days', 7))
+        limit = int(request.GET.get('limit', 50))
+        
+        # Get queryset
+        symptoms_qs = Symptom.objects.filter(user=user)
+        
+        # Filter by days if specified
+        if days and days > 0:
+            cutoff_date = timezone.now() - timedelta(days=days)
+            symptoms_qs = symptoms_qs.filter(timestamp__gte=cutoff_date)
+        
+        # Apply limit and order
+        symptoms = symptoms_qs.order_by('-timestamp')[:limit]
+        
+        # Convert to list of dicts using model's to_dict() method
+        symptoms_list = [symptom.to_dict() for symptom in symptoms]
+        
+        return JsonResponse({
+            "success": True,
+            "symptoms": symptoms_list,
+            "count": len(symptoms_list),
+            "days": days
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+from django.db.models import Count
+@login_required
+@require_http_methods(["GET"])
+def get_symptom_trends_api(request):
+    try:
+        user = request.user
+        days = int(request.GET.get('days', 30))
+        
+        # Calculate cutoff date
+        cutoff_date = timezone.now() - timedelta(days=days)
+        
+        # Get symptoms in timeframe
+        symptoms = Symptom.objects.filter(
+            user=user,
+            timestamp__gte=cutoff_date
+        )
+        
+        # Get symptom frequency
+        symptom_frequency = (
+            symptoms.values('symptom')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+        
+        # Get severity distribution
+        severity_distribution = (
+            symptoms.exclude(severity__isnull=True)
+            .values('severity')
+            .annotate(count=Count('id'))
+            .order_by('severity')
+        )
+        
+        # Convert to list/dict
+        symptom_freq_list = [
+            {"symptom": item['symptom'], "count": item['count']}
+            for item in symptom_frequency
+        ]
+        
+        severity_dict = {
+            item['severity']: item['count']
+            for item in severity_distribution
+        }
+        
+        return JsonResponse({
+            "success": True,
+            "trends": {
+                "days_analyzed": days,
+                "total_symptoms": symptoms.count(),
+                "symptom_frequency": symptom_freq_list,
+                "severity_distribution": severity_dict
+            }
+        })
+            
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def log_symptom_manual_api(request):
+    """
+    API to manually log a symptom using Django ORM.
+    URL: /api/symptoms/log/
+    Method: POST
+    Body: {"symptom": "headache", "severity": "mild"}
+    
+    Matches your Symptom model (no duration field).
+    """
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        symptom_text = data.get('symptom', '').strip()
+        severity = data.get('severity')
+        
+        if not symptom_text:
+            return JsonResponse({
+                "success": False,
+                "error": "Symptom is required"
+            }, status=400)
+        
+        # Validate severity
+        if severity and severity not in ['mild', 'moderate', 'severe']:
+            severity = None
+        
+        # Create symptom record (no duration field in your model)
+        symptom = Symptom.objects.create(
+            user=user,
+            symptom=symptom_text[:500],
+            severity=severity
+        )
+        
+        # Cleanup old entries (keep only last 50 entries and 7 days)
+        cleanup_old_symptoms(user.id)
+        
+        return JsonResponse({
+            "success": True,
+            "id": symptom.id,
+            "message": "Symptom logged successfully"
+        })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False,
+            "error": "Invalid JSON"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+
+def cleanup_old_symptoms(user_id: int):
+    """
+    Clean up old symptom logs for a user.
+    Keeps only last 50 entries and last 7 days.
+    Uses Django ORM.
+    """
+    try:
+        from django.utils import timezone
+        
+        # Get cutoff time (7 days ago)
+        seven_days_ago = timezone.now() - timedelta(days=7)
+        
+        # 1. Delete entries older than 7 days
+        deleted_old = Symptom.objects.filter(
+            user_id=user_id,
+            timestamp__lt=seven_days_ago
+        ).delete()[0]
+        
+        # 2. Keep only the 50 most recent entries
+        # Get IDs of the 50 most recent symptoms
+        recent_ids = Symptom.objects.filter(
+            user_id=user_id
+        ).order_by('-timestamp').values_list('id', flat=True)[:50]
+        
+        # Delete symptoms not in recent_ids
+        deleted_excess = Symptom.objects.filter(
+            user_id=user_id
+        ).exclude(id__in=recent_ids).delete()[0]
+        
+        if deleted_old > 0 or deleted_excess > 0:
+            import logging
+            logger = logging.getLogger(_name_)
+            logger.info(f"Cleaned up symptoms for user {user_id}: {deleted_old} old, {deleted_excess} excess")
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(_name_)
+        logger.error(f"Failed to cleanup old symptoms: {e}")
+        
+
+try:
+    from chatbot.utils import chatbot
+except ImportError:
+    chatbot = None
+
+from django.utils.decorators import method_decorator
+@method_decorator(csrf_exempt, name='dispatch')
+class ChatbotView(APIView):
+    """
+    Simple chatbot endpoint.
+    """
+    def post(self, request):
+        """
+        Handle chatbot messages.
+        Expected JSON:
+        {
+            "message": "user message here",
+            "user_id": "optional_user_id",
+            "context": {}  # optional context
+        }
+        """
+        if chatbot is None:
+            return Response(
+                {"error": "Chatbot module not available"},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        
+        # Get request data
+        data = request.data
+        
+        # Validate
+        message = data.get('message', '').strip()
+        if not message:
+            return Response(
+                {"error": "Message is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user_id = request.user.id
+        if not user_id:
+            user_id = data.get("user_id")
+        context = data.get('context', {})
+        
+        # Process with chatbot
+        try:
+            result = chatbot.process(
+                user_input=message,
+                user_id=user_id,
+                context=context
+            )
+            
+            # Add request metadata
+            result['request_id'] = request.id if hasattr(request, 'id') else None
+            
+            return Response(result)
+            
+        except Exception as e:
+            logger.error(f"Chatbot view error: {e}")
+            return Response(
+                {
+                    "success": False,
+                    "response": "An error occurred while processing your message.",
+                    "error": str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ChatbotHealthView(APIView):
+    """Health check endpoint for chatbot"""
+    def get(self, request):
+        if chatbot is None:
+            return Response(
+                {"status": "unavailable", "message": "Chatbot module not loaded"},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        
+        try:
+            # Try to initialize to check health
+            chatbot.initialize()
+            return Response({
+                "status": "healthy",
+                "message": "Chatbot is ready"
+            })
+        except Exception as e:
+            return Response({
+                "status": "unhealthy",
+                "message": f"Chatbot initialization failed: {str(e)}"
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            
+def chatbot_page(request):
+    return render(request, "medicines/chatbot.html")
 

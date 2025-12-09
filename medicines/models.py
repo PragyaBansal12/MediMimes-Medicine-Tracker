@@ -145,4 +145,38 @@ class Appointment(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
+class Symptom(models.Model):
+    SEVERITY_CHOICES = [
+        ('mild', 'Mild'),
+        ('moderate', 'Moderate'),
+        ('severe', 'Severe'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='symptoms')
+    symptom = models.CharField(max_length=500)
+    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    
+    class Meta:
+        ordering = ['-timestamp']  # Newest first
+        indexes = [
+            models.Index(fields=['user', '-timestamp']),  # For fast queries
+        ]
+        verbose_name = "Symptom Log"
+        verbose_name_plural = "Symptom Logs"
+    
+    def _str_(self):
+        severity_str = f" ({self.severity})" if self.severity else ""
+        return f"{self.user.username}: {self.symptom}{severity_str}"
+    
+    def to_dict(self):
+        """Convert to dictionary for API responses."""
+        return {
+            "id": self.id,
+            "symptom": self.symptom,
+            "severity": self.severity,
+            "timestamp": self.timestamp.isoformat(),
+        }
+
 

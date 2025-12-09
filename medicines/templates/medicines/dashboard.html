@@ -11,242 +11,275 @@
     <link rel="stylesheet" href="{% static 'medicines/css/chatbot.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (FINAL DASHBOARD) ==== */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        /* ==== MINIMALIST LIGHT THEME (REVISED DASHBOARD) ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            /* Primary Dark Blue Palette (Consistent) */
-            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
-            --bg-secondary: #1d2534; /* Card/Section Background */
-            --border-color: #384050; /* Dark, non-intrusive Border */
+            /* Light Minimal Palette */
+            --bg-primary: #ffffff; /* Full White Background */
+            --bg-secondary: #f9f9f9; /* Subtle Card/Section Background */
+            --border-color: #e0e0e0; /* Very Light Thin Border */
             
             /* Text Colors */
-            --text-color-light: #e0e0e0; 
-            --text-color-muted: #9aa5b6; 
-            --text-color-dark: #212529; 
+            --text-color-dark: #212529; /* Primary Text */
+            --text-color-muted: #6c757d; /* Muted Secondary Text */
+            --text-color-light: #ffffff; /* (Mostly unused in light theme) */
 
-            /* Accent Colors */
-            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
-            --accent-hover: #4f46e5;
+            /* Accent Colors (Soft and Muted) */
+            --accent-color: #5d5dd6; /* Soft Indigo/Blue */
+            --accent-hover: #4b4bca;
             
-            /* Status Colors (Muted for Dark Mode) */
-            --success-color: #34d399; /* Mint Green */
-            --danger-color: #fca5a5; /* Coral Red */
-            --warning-color: #fde047; /* Pale Yellow */
+            /* Status Colors (Softened) */
+            --success-color: #38b000; /* Apple-style Green */
+            --danger-color: #e63946; /* Soft Red */
+            --warning-color: #ffb703; /* Soft Amber */
             
-            --table-header-bg: #2a3547;
-            --button-dark-text: #212529;
+            --table-header-bg: #f4f4f4;
+            --button-dark-text: #ffffff; /* Buttons on accent should have white text */
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Softest shadow */
         }
 
         body {
             background: var(--bg-primary);
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
             padding-bottom: 3rem;
             position: relative;
             overflow-x: hidden;
+            font-weight: 400; /* Lighter base font weight */
         }
-
-        /* Particles/Magic effects removed */
-        body::before { display: none; }
-        .particles { display: none; }
 
         /* --- Navigation --- */
         .navbar-modern {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: none; /* No shadow for minimalist look */
             font-weight: 500;
         }
         .navbar-brand {
             color: var(--accent-color) !important;
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 600; /* Prominent brand */
+            font-size: 1.4rem;
         }
         .nav-link {
-            color: var(--text-color-light) !important;
+            color: var(--text-color-dark) !important;
             border-radius: 6px;
             transition: background-color 0.2s;
+            padding: 0.5rem 0.75rem;
+            margin-right: 0.5rem;
         }
         .nav-link:hover {
-            background-color: #2a3547;
+            background-color: var(--table-header-bg);
         }
         .navbar-text {
             color: var(--text-color-muted) !important;
+            font-weight: 400;
         }
 
         /* --- Main Content Container --- */
         .dashboard-container {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: none; /* No shadow on container, only on cards */
             margin-top: 2rem;
             margin-bottom: 2rem;
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
         }
 
         .welcome-title {
-            color: var(--accent-color);
+            color: var(--text-color-dark);
             font-weight: 700;
-            font-size: 2.5rem;
-            position: relative;
-            display: inline-block;
+            font-size: 2.8rem; /* Larger heading */
+            margin-bottom: 0.5rem !important;
         }
-        .welcome-title::after { display: none; } /* Remove magic sparkle */
-        .lead { color: var(--text-color-muted) !important; }
+        .lead { 
+            color: var(--text-color-muted) !important; 
+            font-weight: 300;
+            font-size: 1.1rem;
+        }
 
         /* --- Card Styles (Standard) --- */
         .card-modern {
-            background: var(--bg-primary); 
+            background: var(--bg-secondary); /* Subtle off-white for cards */
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
             height: 100%;
         }
         .card-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
         }
 
         .card-header-modern {
             background: var(--table-header-bg);
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
             border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem;
+            padding: 1.25rem 1.5rem;
             font-weight: 600;
-            border-radius: 12px 12px 0 0;
+            font-size: 1.1rem;
+            border-radius: 10px 10px 0 0;
         }
         .card-header-modern h4, .card-header-modern h5 {
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
+            font-weight: 600;
         }
         .card-header-modern i {
-            color: var(--accent-color);
+            color: var(--text-color-muted); /* Muted icon color */
         }
 
         /* --- Summary Cards --- */
         .summary-card {
-            padding: 1.5rem;
+            padding: 1.8rem 1rem; /* More vertical padding */
             text-align: center;
         }
         .summary-icon {
-            font-size: 2.2rem;
-            margin-bottom: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
             display: block;
-            animation: none; /* Remove float animation */
+            color: var(--text-color-muted);
         }
         .summary-card h6 {
             color: var(--text-color-muted) !important;
             font-weight: 500;
             text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
         }
         .summary-card h3, .summary-card h5 {
-            color: var(--text-color-light);
-            font-size: 2.2rem;
+            color: var(--text-color-dark);
+            font-size: 2.5rem; /* Large value */
             font-weight: 700;
+            margin-top: 0.2rem;
         }
-        /* Specific Summary Colors */
+        /* Specific Summary Colors - Only use for the main value */
         .summary-card.adherence h3 { color: var(--success-color) !important; }
-        .summary-card.next-dose h5 { color: var(--accent-color) !important; font-size: 1.5rem; }
+        .summary-card.next-dose h5 { color: var(--accent-color) !important; font-size: 1.8rem; }
         .summary-card.streak h3 { color: var(--warning-color) !important; }
-        .summary-card.total h3 { color: var(--text-color-muted) !important; }
+        .summary-card.total h3 { color: var(--text-color-dark) !important; }
 
         /* --- Dose Item List --- */
         .dose-item {
-            background: var(--bg-primary); 
+            background: var(--bg-primary); /* Full white list items */
             border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 10px;
+            padding: 1.2rem 1.5rem; /* More padding for space */
+            margin-bottom: 12px;
             border: 1px solid var(--border-color);
             border-left: 5px solid;
             transition: all 0.2s;
         }
         .dose-item:hover {
-            background: #171d28;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background: #fcfcfc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         /* Dose Item Status Highlighting */
         .dose-item.taken { border-left-color: var(--success-color); }
         .dose-item.missed { border-left-color: var(--danger-color); }
         .dose-item.pending { border-left-color: var(--warning-color); }
-        .dose-item h5 { color: var(--text-color-light); font-weight: 600; }
-        .dose-item p { color: var(--text-color-muted); }
+        .dose-item h5 { color: var(--text-color-dark); font-weight: 600; font-size: 1.1rem; }
+        .dose-item p { color: var(--text-color-muted); font-size: 0.9rem; }
 
         /* Status Badges */
         .badge-modern {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
             font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--button-dark-text) !important;
+            font-size: 0.75rem;
+            color: var(--text-color-dark) !important; /* Dark text on light badge */
+            border: 1px solid;
         }
-        .badge-modern.text-success { background-color: var(--success-color); }
-        .badge-modern.text-danger { background-color: var(--danger-color); }
-        .badge-modern.text-warning { background-color: var(--warning-color); }
+        .badge-modern.text-success { background-color: #e0f7e0; color: var(--success-color) !important; border-color: #c8e6c9; }
+        .badge-modern.text-danger { background-color: #fcebeb; color: var(--danger-color) !important; border-color: #f7d9d9; }
+        .badge-modern.text-warning { background-color: #fff9e6; color: var(--warning-color) !important; border-color: #ffedb3; }
 
-        /* Buttons */
-        .btn-magical, .btn-magical::before, .btn-magical:hover::before { 
-            /* Removing complex magical button styling */
-            all: unset;
-        }
+        /* Buttons (Minimalist, Outline-like) */
         .btn-modern-sm {
             border-radius: 6px;
             padding: 0.4rem 0.8rem;
-            font-weight: 600;
-            color: var(--button-dark-text);
-            transition: background-color 0.2s;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-color-dark);
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
         }
-        .btn-group .btn-success { background-color: var(--success-color); border: none; }
-        .btn-group .btn-danger { background-color: var(--danger-color); border: none; }
-        .btn-group .btn-success:hover { background-color: #2cb984; }
-        .btn-group .btn-danger:hover { background-color: #f99090; }
+        /* Override default Bootstrap button group styling */
+        .btn-group .btn-success, .btn-group .btn-danger {
+            background-color: var(--bg-primary); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color-dark); 
+        }
+
+        .btn-group .btn-success:hover { 
+            background-color: #e0f7e0; 
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+        .btn-group .btn-danger:hover { 
+            background-color: #fcebeb; 
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        .btn-group .btn-modern-sm i {
+            color: var(--text-color-muted);
+        }
+        .btn-group .btn-success:hover i {
+            color: var(--success-color);
+        }
+        .btn-group .btn-danger:hover i {
+            color: var(--danger-color);
+        }
 
         /* Charts */
         .chart-container {
-            height: 280px;
-            background: var(--bg-primary); 
+            height: 300px; /* Slightly taller charts */
+            background: var(--bg-primary);
             border-radius: 8px;
-            padding: 1rem;
+            padding: 1.5rem;
             border: 1px solid var(--border-color);
         }
         
         /* Empty State */
         .empty-state {
-            background: var(--bg-primary);
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 3rem;
+            background: var(--table-header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 4rem; /* More padding */
             text-align: center;
         }
         .empty-state i { color: var(--accent-color); }
-        .empty-state h4, .empty-state p { color: var(--text-color-muted); }
+        .empty-state h4, .empty-state p { color: var(--text-color-muted); font-weight: 400; }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-modern">
+        <div class="container py-2">
             <a class="navbar-brand" href="{% url 'dashboard' %}">
                 <i class="fas fa-prescription-bottle-alt me-2"></i>MediMimes
             </a>
             <div class="navbar-nav ms-auto align-items-center">
-                <span class="navbar-text me-4">
+                <span class="navbar-text me-4 d-none d-md-block">
                     <i class="fas fa-user-circle me-2"></i>Welcome, {{ user.username }}!
                 </span>
-                <a class="nav-link me-3" href="{% url 'doctor_list' %}">
+                <a class="nav-link me-2" href="{% url 'doctor_list' %}">
                     <i class="fas fa-stethoscope me-1"></i>Consultation
                 </a>
-                <a class="nav-link me-3" href="{% url 'patient_requests' %}">
+                <a class="nav-link me-2" href="{% url 'patient_requests' %}">
                     <i class="fas fa-list-ul me-1"></i> My Requests
                 </a>
-                <a class="nav-link me-3" href="{% url 'med_list' %}">
+                <a class="nav-link me-2" href="{% url 'med_list' %}">
                     <i class="fas fa-capsules me-1"></i>Medications
                 </a>
+                <a class="nav-link" href="{% url 'chatbot_page' %}">
+                  <i class="fas fa-door-open me-1"></i>AI Assistant
+                </a>
                 <a class="nav-link" href="{% url 'logout' %}">
                     <i class="fas fa-door-open me-1"></i>Logout
                 </a>
@@ -256,12 +289,14 @@
 
     <div class="container">
         <div class="dashboard-container p-4 p-lg-5">
-            <div class="text-center mb-5">
-                <h1 class="welcome-title display-4 fw-bold mb-3">Medication Dashboard</h1>
-                <p class="lead text-muted">Your health overview at a glance.</p>
+            <div class="text-center mb-5 pt-3 pb-3">
+                <h1 class="welcome-title fw-bold mb-3">Medication Dashboard</h1>
+                <p class="lead">Your health overview at a glance.</p>
             </div>
+            
+            <hr class="text-muted opacity-25">
 
-            <div class="row g-4 mb-5">
+            <div class="row g-4 mb-5 pt-4">
                 <div class="col-md-3 col-6">
                     <div class="card-modern summary-card adherence">
                         <i class="fas fa-chart-line summary-icon" style="color: var(--success-color);"></i>
@@ -306,11 +341,11 @@
                                         <div class="d-flex align-items-center">
                                             <div class="me-3">
                                                 {% if dose.status == 'taken' %}
-                                                <i class="fas fa-check-circle fa-2x" style="color: var(--success-color);"></i>
+                                                <i class="fas fa-check-circle fa-2x text-success"></i>
                                                 {% elif dose.status == 'missed' %}
-                                                <i class="fas fa-times-circle fa-2x" style="color: var(--danger-color);"></i>
+                                                <i class="fas fa-times-circle fa-2x text-danger"></i>
                                                 {% else %}
-                                                <i class="fas fa-clock fa-2x" style="color: var(--warning-color);"></i>
+                                                <i class="fas fa-clock fa-2x text-warning"></i>
                                                 {% endif %}
                                             </div>
                                             <div>
@@ -321,7 +356,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 text-start text-md-center mt-2 mt-md-0">
                                         <span class="badge badge-modern 
                                             {% if dose.status == 'taken' %}text-success
                                             {% elif dose.status == 'missed' %}text-danger
@@ -331,7 +366,7 @@
                                             {% else %}⏰ Pending{% endif %}
                                         </span>
                                     </div>
-                                    <div class="col-md-4 text-end">
+                                    <div class="col-md-4 text-start text-md-end mt-3 mt-md-0">
                                         <div class="btn-group">
                                             <button class="btn btn-success btn-sm btn-modern-sm mark-taken-btn" 
                                                     data-dose-id="{{ dose.dose_log_id }}">
@@ -446,9 +481,9 @@
 
         // Initialize charts
         document.addEventListener('DOMContentLoaded', function () {
-            // Define Dark Mode Colors using CSS Variables for consistency
+            // Define Light Mode Colors using CSS Variables for consistency
             const style = getComputedStyle(document.body);
-            const BG_SECONDARY = style.getPropertyValue('--bg-secondary');
+            const BG_PRIMARY = style.getPropertyValue('--bg-primary');
             const BORDER_COLOR = style.getPropertyValue('--border-color');
             const ACCENT_COLOR = style.getPropertyValue('--accent-color');
             const TEXT_MUTED = style.getPropertyValue('--text-color-muted');
@@ -462,7 +497,7 @@
             const weeklyAdherence = JSON.parse('{{ weekly_adherence_json|default:"[]"|escapejs }}');
             const weekDays = JSON.parse('{{ week_days_json|default:"[]"|escapejs }}');
 
-            // Set Global Chart Defaults for Dark Mode
+            // Set Global Chart Defaults for Light Mode
             Chart.defaults.color = TEXT_MUTED;
             Chart.defaults.borderColor = BORDER_COLOR;
             Chart.defaults.font.family = 'Inter';
@@ -483,7 +518,7 @@
                             data: [takenCount, missedCount, pendingCount],
                             backgroundColor: [SUCCESS_COLOR, DANGER_COLOR, WARNING_COLOR],
                             borderWidth: 3,
-                            borderColor: BG_SECONDARY // Use card background for separation
+                            borderColor: BG_PRIMARY // Use primary background for separation
                         }]
                     },
                     options: {
@@ -496,7 +531,7 @@
                                     padding: 20,
                                     usePointStyle: true,
                                     color: TEXT_MUTED,
-                                    font: { weight: '600' }
+                                    font: { weight: '500' }
                                 }
                             }
                         }
@@ -515,13 +550,13 @@
                             label: 'Adherence %',
                             data: weeklyAdherence,
                             borderColor: ACCENT_COLOR,
-                            backgroundColor: ACCENT_COLOR.replace('rgb(', 'rgba(').replace(')', ', 0.15)'),
-                            borderWidth: 3,
+                            backgroundColor: ACCENT_COLOR.replace('rgb(', 'rgba(').replace(')', ', 0.1)'), /* Lighter fill */
+                            borderWidth: 2, /* Thinner line */
                             pointBackgroundColor: ACCENT_COLOR,
-                            pointBorderColor: BG_SECONDARY,
+                            pointBorderColor: BG_PRIMARY,
                             pointBorderWidth: 2,
-                            pointRadius: 6,
-                            tension: 0.4,
+                            pointRadius: 5,
+                            tension: 0.3, /* Smoother curve */
                             fill: true
                         }]
                     },
@@ -545,7 +580,7 @@
                         },
                         plugins: {
                             legend: {
-                                labels: { color: TEXT_MUTED, font: { weight: '600' } }
+                                labels: { color: TEXT_MUTED, font: { weight: '500' } }
                             }
                         }
                     }

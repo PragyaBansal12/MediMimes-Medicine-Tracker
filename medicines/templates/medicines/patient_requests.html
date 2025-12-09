@@ -8,50 +8,51 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (REQUEST LIST) ==== */
+        /* ==== CLEAN MODERN MEDICAL UI (REQUEST LIST) - TEAL ACCENTS, WHITE BG ==== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            /* Primary Dark Blue Palette (Consistent) */
-            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
-            --bg-secondary: #1d2534; /* Card/Section Background */
-            --border-color: #384050; /* Dark, non-intrusive Border */
+            /* Primary Light/White Palette */
+            --bg-primary: #f8f9fa; /* Very Light Grey/White Background */
+            --bg-secondary: #ffffff; /* Card/Section Pure White Background */
+            --border-color: #dee2e6; /* Light Grey Border */
             
             /* Text Colors */
-            --text-color-light: #e0e0e0; 
-            --text-color-muted: #9aa5b6; 
-            --text-color-dark: #212529; /* For dark text on bright buttons/badges */
+            --text-color-dark: #212529; /* Standard Dark Text */
+            --text-color-muted: #6c757d; /* Muted Grey Text */
+            --text-color-table: #495057; /* Slightly darker text for table readability */
 
-            /* Accent Colors */
-            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
-            --accent-hover: #4f46e5;
+            /* Accent Colors (Teal/Aqua Medical Theme) */
+            --accent-color: #20c997; /* Vibrant Teal/Aqua */
+            --accent-hover: #17a97e; /* Darker Teal for Hover */
+            --shadow-color-light: rgba(0, 0, 0, 0.08);
+
+            /* Status Colors (Vibrant for Light Mode) */
+            --success-color: #10b981; /* Green */
+            --danger-color: #ef4444; /* Red */
+            --warning-color: #f59e0b; /* Amber */
             
-            /* Status Colors (Muted for Dark Mode) */
-            --success-color: #34d399; /* Muted Mint Green */
-            --danger-color: #fca5a5; /* Muted Coral Red */
-            --warning-color: #fde047; /* Muted Pale Yellow */
-            
-            --table-header-bg: #2a3547;
-            --table-hover-bg: #2a3547;
+            --table-header-bg: #e9ecef; /* Very light grey header */
+            --table-hover-bg: #f3f4f6;
         }
         
         body {
             background: var(--bg-primary);
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
             padding: 2rem 0;
         }
         
         /* Container */
         .requests-container {
             background: var(--bg-secondary);
-            border-radius: 12px;
+            border-radius: 16px; 
             border: 1px solid var(--border-color);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 30px var(--shadow-color-light);
             margin-top: 4rem;
             padding: 2.5rem;
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
         }
         
         /* Title */
@@ -62,19 +63,21 @@
 
         /* Table Styling */
         .table-requests {
-            background: var(--bg-primary); 
-            border-radius: 8px;
+            background: var(--bg-secondary); 
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            --bs-table-bg: var(--bg-secondary);
         }
         
         .table-requests thead {
             background: var(--table-header-bg) !important;
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
+            border-bottom: 2px solid var(--accent-color); /* Teal line under header */
         }
         
         .table-requests th {
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: none;
             padding: 1rem;
             font-weight: 600;
             color: var(--text-color-muted);
@@ -82,7 +85,7 @@
         
         .table-requests td {
             border-color: var(--border-color);
-            color: var(--text-color-light);
+            color: var(--text-color-table);
             vertical-align: middle;
             padding: 1rem;
         }
@@ -94,43 +97,49 @@
         
         /* Status Badges */
         .status-badge {
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
+            border-radius: 50rem; /* Pill shape for modern look */
+            padding: 0.4rem 1rem;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            display: inline-block;
         }
-        /* Muted dark mode colors */
+        /* Vibrant light mode colors */
         .status-accepted { 
             background-color: var(--success-color); 
-            color: var(--text-color-dark); /* Dark text on bright badge */
+            color: #ffffff; 
         }
         .status-pending { 
             background-color: var(--warning-color); 
-            color: var(--text-color-dark); 
+            color: #ffffff; 
         }
         .status-rejected { 
             background-color: var(--danger-color); 
-            color: var(--text-color-dark); 
+            color: #ffffff; 
         }
         
         .text-dr {
-            color: var(--text-color-light);
+            color: var(--text-color-dark);
+            font-weight: 700;
         }
         
         /* Action Button */
         .btn-back-portal {
             background: var(--accent-color);
-            border: none;
+            border: 1px solid var(--accent-color);
             border-radius: 8px;
             padding: 0.75rem 2rem;
             font-weight: 600;
-            color: var(--text-color-light);
+            color: #ffffff;
             transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(32, 201, 151, 0.4);
         }
         .btn-back-portal:hover {
             background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            color: #ffffff;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(32, 201, 151, 0.6);
         }
         
         .empty-cell {
@@ -141,7 +150,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="requests-container shadow-lg">
+        <div class="requests-container">
             <h1 class="text-center mb-5 page-title"><i class="fas fa-hand-paper me-2"></i>My Sent Requests</h1>
             
             <div class="table-responsive">

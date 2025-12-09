@@ -2,240 +2,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if med %}Edit{% else %}Add{% endif %} Medication</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% if med %}Edit{% else %}Add{% endif %} Medication - HealthConnect</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-
-        :root {
-            --disney-blue: #1a3e6f;
-            --disney-gold: #ffd700;
-            --disney-red: #d4002a;
-            --disney-purple: #6a0dad;
-            --disney-silver: #c0c0c0;
-            --magic-sparkle: #b19cd9;
+        /* ---------- Design tokens (Clean Medical Theme) ---------- */
+        :root{
+            --bg: #f7fafc;              /* very light gray */
+            --card-bg: #ffffff;          /* white cards */
+            --primary: #0d6efd;          /* bootstrap primary (blue) */
+            --teal: #0bb5a3;             /* calm teal accent */
+            --muted: #6c757d;            /* muted text */
+            --success: #198754;
+            --radius: 14px;
+            --glass-border: rgba(13,110,253,0.06);
+            --shadow-1: 0 6px 18px rgba(18,52,84,0.06);
+            --shadow-2: 0 1px 0 rgba(255,255,255,0.6) inset;
+            font-family: "Inter", "Quicksand", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
         }
 
-        body {
-            background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%);
-            min-height: 100vh;
-            font-family: 'Quicksand', sans-serif;
-            position: relative;
-            overflow-x: hidden;
-            padding: 2rem 0;
+        html,body{
+            height:100%;
+            background: linear-gradient(180deg, var(--bg) 0%, #eef6fb 100%);
+            color: #0b2447;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            padding: 3rem 1rem;
         }
 
-        /* Magical sparkle effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
-                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.3) 2px, transparent 2px),
-                radial-gradient(circle at 40% 40%, rgba(177, 156, 217, 0.2) 1px, transparent 1px);
-            background-size: 100px 100px, 150px 150px, 200px 200px;
-            pointer-events: none;
-            z-index: -1;
-            animation: sparkle 20s linear infinite;
-        }
-
-        @keyframes sparkle {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
-        }
-
+        /* Form Container (Card) */
         .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.3),
-                0 0 50px rgba(255, 215, 0, 0.2);
-            border: 3px solid var(--disney-gold);
-            position: relative;
-            overflow: hidden;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-1);
+            border: 1px solid var(--glass-border);
             max-width: 600px;
             margin: 0 auto;
+            padding: 2.5rem;
         }
 
-        .form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, 
-                var(--disney-blue), 
-                var(--disney-purple), 
-                var(--disney-red), 
-                var(--disney-gold));
-            z-index: 10;
-        }
-
-        .welcome-title {
-            background: linear-gradient(45deg, var(--disney-blue), var(--disney-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
-            position: relative;
-            display: inline-block;
-        }
-
-        .welcome-title::after {
-            content: '✨';
-            position: absolute;
-            right: -40px;
-            top: 0;
-            animation: spin 3s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .form-card {
-            background: transparent;
-            border: none;
-            padding: 2rem;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--disney-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control-magical {
-            border: 2px solid var(--disney-silver);
-            border-radius: 15px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .form-control-magical:focus {
-            border-color: var(--disney-purple);
-            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        .form-select-magical {
-            border: 2px solid var(--disney-silver);
-            border-radius: 15px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-            cursor: pointer;
-        }
-
-        .form-select-magical:focus {
-            border-color: var(--disney-purple);
-            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-magical {
-            background: linear-gradient(135deg, var(--disney-purple) 0%, var(--disney-blue) 100%);
-            border: 2px solid var(--disney-gold);
-            color: white;
-            border-radius: 25px;
-            padding: 0.75rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-magical::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
-                transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-magical:hover::before {
-            left: 100%;
-        }
-
-        .btn-magical:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-success-magical {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border: 2px solid var(--disney-gold);
-            color: white;
-        }
-
-        .btn-secondary-magical {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            border: 2px solid var(--disney-silver);
-            color: white;
-        }
-
-        .time-field-group {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border: 2px solid var(--disney-silver);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .time-input {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .time-input:focus {
-            border-color: var(--disney-purple);
-            box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.15);
-            transform: translateY(-1px);
-        }
-
+        /* Icon Circle */
         .icon-wrapper {
             text-align: center;
             margin-bottom: 1.5rem;
         }
 
-        .magic-icon {
-            font-size: 3rem;
-            background: linear-gradient(45deg, var(--disney-gold), var(--disney-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: float 3s ease-in-out infinite;
+        .icon-circle{
+            width:64px; height:64px; border-radius:12px;
+            display:inline-flex; align-items:center; justify-content:center;
+            background: linear-gradient(180deg, rgba(13,110,253,0.08), rgba(11,181,163,0.04));
+            border: 1px solid rgba(13,110,253,0.06);
+            color: var(--primary); font-size:1.4rem;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        /* Title */
+        .welcome-title {
+            color: #072338;
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 600;
+            color: #0b2447;
+            margin-bottom: 0.4rem;
+        }
+
+        /* Clean Inputs - Replaces .form-control-magical */
+        .form-control-clean{
+            border:1px solid #e6eef7;
+            border-radius: 12px;
+            padding: .75rem 1rem;
+            background: #fbfdff;
+            transition: all .15s ease-in-out;
+            color: #062335;
+            box-shadow: var(--shadow-2);
+        }
+        .form-control-clean:focus{
+            outline:none;
+            box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+            border:1px solid rgba(13,110,253,0.25);
+            transform: translateY(-1px);
+        }
+        
+        /* Clean Select - Replaces .form-select-magical */
+        .form-select-clean {
+            border:1px solid #e6eef7;
+            border-radius: 12px;
+            padding: .75rem 1rem;
+            background: #fbfdff;
+            color: #062335;
+            box-shadow: var(--shadow-2);
+            /* Custom arrow for clean look */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5L8 11L14 5'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            appearance: none;
+        }
+        .form-select-clean:focus {
+            outline:none;
+            box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+            border:1px solid rgba(13,110,253,0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Primary/Success Button - Replaces .btn-success-magical and .btn-magical */
+        .btn-primary-health{
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--teal) 0%, var(--primary) 100%);
+            border: none;
+            color: #fff;
+            padding: .75rem 1.5rem;
+            font-weight:700;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 8px 18px rgba(13,110,253,0.12);
+        }
+        .btn-primary-health:hover{
+            transform: translateY(-2px);
+            filter:brightness(1.04);
+        }
+        
+        /* Secondary Button - Replaces .btn-secondary-magical */
+        .btn-secondary-health {
+            border-radius: 12px;
+            background: #f8f9fa;
+            border: 1px solid #e6eef7;
+            color: #0b2447;
+            padding: .75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+        .btn-secondary-health:hover {
+            transform: translateY(-1px);
+            background: #eef6fb;
+        }
+
+        /* Time Field Group */
+        .time-field-group {
+            background: #f8fafd; /* Lighter background for the time section */
+            border: 1px solid #e6eef7;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-input {
+            border: 1px solid #e6eef7;
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .time-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+            transform: translateY(0);
         }
 
         .help-text {
-            color: #6c757d;
+            color: var(--muted);
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
@@ -244,90 +183,86 @@
 <body>
     <div class="container">
         <div class="form-container">
-            <!-- Header -->
-            <div class="text-center pt-4">
+            <div class="text-center pt-2">
                 <div class="icon-wrapper">
-                    <i class="fas fa-pills magic-icon"></i>
+                    <div class="icon-circle" aria-hidden="true">
+                        <i class="fas fa-pills"></i>
+                    </div>
                 </div>
-                <h1 class="welcome-title display-5 fw-bold mb-3">
+                <h1 class="welcome-title fw-bold">
                     {% if med %}Edit{% else %}Add{% endif %} Medication
                 </h1>
-                <p class="text-muted">{% if med %}Update your magical potion{% else %}Create your magical potion{% endif %} ✨</p>
+                <p class="subtitle">Set up your *Daily Dosage Schedule*.</p>
             </div>
 
-            <!-- Form -->
-            <div class="form-card">
+            <div class="form-card p-0">
                 <form method="post">
                     {% csrf_token %}
                     
-                    <!-- Pill Name -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-tag me-2"></i>Pill Name
+                            <i class="fas fa-tag me-2"></i>Medication Name
                         </label>
-                        <input type="text" class="form-control-magical form-control" 
+                        <input type="text" class="form-control-clean form-control" 
                                name="pill_name" value="{{ med.pill_name|default:'' }}" 
-                               placeholder="Enter pill name" required>
-                        <div class="help-text">What's the name of your magical potion?</div>
+                               placeholder="e.g., Aspirin, Metformin" required>
+                        <div class="help-text">What is the name of the medication?</div>
                     </div>
 
-                    <!-- Dosage -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-balance-scale me-2"></i>Dosage
+                            <i class="fas fa-balance-scale me-2"></i>Dosage (Units)
                         </label>
-                        <input type="number" class="form-control-magical form-control" 
+                        <input type="number" class="form-control-clean form-control" 
                                name="dosage" value="{{ med.dosage|default:'' }}" 
-                               min="1" placeholder="Enter dosage" required>
-                        <div class="help-text">How much should you take each time?</div>
+                               min="1" placeholder="e.g., 500 (mg)" required>
+                        <div class="help-text">How many units should you take per dose?</div>
                     </div>
 
-                    <!-- Frequency -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-sync-alt me-2"></i>Frequency
+                            <i class="fas fa-sync-alt me-2"></i>Frequency Type
                         </label>
-                        <select class="form-select-magical form-select" name="frequency_type" id="frequency_type">
+                        <select class="form-select-clean form-select" name="frequency_type" id="frequency_type">
                             <option value="DAILY" {% if not med or med.frequency_type == "DAILY" %}selected{% endif %}>
                                 📅 Daily
                             </option>
                             <option value="WEEKLY" disabled>📊 Weekly (coming soon)</option>
                             <option value="CUSTOM" disabled>⚡ Custom (coming soon)</option>
                         </select>
-                        <div class="help-text">How often do you need to take this?</div>
+                        <div class="help-text">How often do you need to take this medication?</div>
                     </div>
 
-                    <!-- Times per day -->
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fas fa-clock me-2"></i>Times per day
+                            <i class="fas fa-clock me-2"></i>Doses per day
                         </label>
-                        <input type="number" class="form-control-magical form-control" 
+                        <input type="number" class="form-control-clean form-control" 
                                id="times_per_day" name="times_per_day" 
                                value="{% if med %}{{ med.times|length }}{% else %}1{% endif %}" 
                                min="1" max="5" required>
-                        <div class="help-text">How many times a day? (1-5 times)</div>
+                        <div class="help-text">Set the number of doses per day (Max 5).</div>
                     </div>
 
-                    <!-- Dynamic time inputs -->
                     <div class="time-field-group">
                         <label class="form-label">
-                            <i class="fas fa-hourglass-half me-2"></i>Set Times
+                            <i class="fas fa-hourglass-half me-2"></i>Set Specific Times
                         </label>
                         <div id="time-fields" class="mt-3"></div>
-                        <div class="help-text">Set the specific times for each dose</div>
+                        <div class="help-text">Specify the exact time for each dose.</div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="text-center mt-5">
-                        <button type="submit" class="btn btn-success-magical btn-magical me-3">
-                            <i class="fas fa-save me-2"></i>
-                            {% if med %}Update Potion{% else %}Create Potion{% endif %}
+                        <button type="submit" class="btn btn-primary-health me-3" style="color: #000000;">
+                            <i class="fas fa-save me-2" style="color: #000000;"></i>
+                            {% if med %}Update Schedule{% else %}Save Medication{% endif %}
                         </button>
-                        <a href="{% url 'med_list' %}" class="btn btn-secondary-magical btn-magical">
+
+                        <a href="{% url 'med_list' %}" class="btn btn-secondary-health">
                             <i class="fas fa-arrow-left me-2"></i>Back to List
                         </a>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -375,12 +310,12 @@
                 
                 const label = document.createElement("label");
                 label.className = "form-label small";
-                label.textContent = `Time ${i + 1}`;
+                label.textContent = Time `${i + 1}`;
                 
                 const input = document.createElement("input");
                 input.type = "time";
                 input.name = "times";
-                input.className = "form-control time-input";
+                input.className = "form-control time-input"; // Using standard bootstrap class with .time-input override
                 input.required = true;
                 
                 // Use temporary cached user input (if count was just changed)

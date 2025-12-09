@@ -55,4 +55,14 @@ urlpatterns = [
 
     path('overwatch/', views.admin_overwatch, name='overwatch'),
     path('accounts/', include('allauth.urls')),
+
+    # symptom APIs
+    path('api/symptoms/', views.get_user_symptoms_api, name='get_symptoms'),
+    path('api/symptoms/trends/', views.get_symptom_trends_api, name='symptom_trends'),
+    path('api/symptoms/log/', views.log_symptom_manual_api, name='log_symptom'),
+    
+   # Chatbot endpoints
+    path('chat/', views.ChatbotView.as_view(), name='chatbot'),
+    path('chat/health/', views.ChatbotHealthView.as_view(), name='chatbot-health'),
+    path('assistant/', views.chatbot_page, name='chatbot_page'),
 ]

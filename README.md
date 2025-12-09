@@ -68,21 +68,10 @@ It not only reminds users to take medicines, but also conversational support. //
 ### Notification service
 - Medication alerts on web browser
 
-### AI Chatbot (LangGraph + RAG)
-- Intent classifier to route medical queries
-- Safety nodes: Red Flag and Emergency Detector
-- Symptom analysis (non-diagnostic)
-- Medication information from structured PDF datasets
-- Fallback and repair nodes for unclear queries
-- Fast retrieval using Chroma vector search
-- Strict safety compliance (non-prescriptive, no dosing advice)
-
 ### Google Calendar Integration
 - OAuth-based secure calendar linking
 - Auto-create events for docot appointments
 - Sync reminders across devices
-
----
 
 ###  RAG Based Chatbot
 - Built using LangGraph with a structured, multi-node conversational workflow.
@@ -93,29 +82,29 @@ It not only reminds users to take medicines, but also conversational support. //
 - Supports adherence and general medication understanding via an Adherence Node.
 - Includes a Fallback Node for unclear queries to maintain reliability and reduce hallucinations.
 - Maintains stateful, controlled conversation flow across all nodes for consistency and safety.
+- Strict safety compliance (non-prescriptive, no dosing advice)
 
----
 
 ###  Live Chat Interface
 - Smooth real-time chatbot UI  
 - Typing indicators with streaming responses  
 - Mobile-responsive design  
 
----
+
 ###  Data Management
 - User profile section  
 - Query history logs (optional)  
 - Admin controls for uploading medical PDFs  
 - SQLite-backed persistent storage  
 
----
+
 
 ###  Knowledge Blog (Optional Module)
 - Public health-awareness article hub  
 - Markdown-based editor  
 - Django-admin moderation  
 
----
+
 ###  Session Management
 - Django session-based login  
 - Auto-logout after session expiry  
@@ -155,7 +144,8 @@ It not only reminds users to take medicines, but also conversational support. //
 
 ---
 ### Database Schema
-<img width="1114" height="3107" alt="diagram-export-12-9-2025-3_10_20-PM" src="https://github.com/user-attachments/assets/0e3909f2-7a61-46be-b246-a529926fe6ce" />
+<img width="1205" height="2361" alt="diagram-export-12-9-2025-3_28_50-PM" src="https://github.com/user-attachments/assets/df3f55c8-3d4c-4113-8ea5-135e300bea2a" />
+
 
 
 ---
@@ -238,6 +228,7 @@ sequenceDiagram
 ---
 
 ### AI/ML Integration Details
+
 ```mermaid
 flowchart TD
 
@@ -280,6 +271,7 @@ flowchart TD
 -map based doctor recommendation system
 -trend analysis for patient in dashboard (present in chatbot)
 -payment gateway for appointment and premium feature access
+
 
 
 

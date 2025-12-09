@@ -3,58 +3,179 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Master Overwatch Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Oversight Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --disney-blue: #1a3e6f; --disney-gold: #ffd700; }
-        body { background: linear-gradient(135deg, #1a3e6f 0%, #d4002a 100%); min-height: 100vh; font-family: 'Quicksand', sans-serif; color: #fff; }
-        .overwatch-container { background: rgba(255, 255, 255, 0.95); border-radius: 20px; border: 4px solid var(--disney-gold); color: #333; margin-top: 3rem; padding: 2rem; }
-        .badge-status { border-radius: 12px; padding: 0.3rem 0.8rem; font-size: 0.85rem; }
+        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (ADMIN PANEL) ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            /* Primary Dark Blue Palette (Consistent with Dashboard) */
+            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
+            --bg-secondary: #1d2534; /* Card/Section Background */
+            --border-color: #384050; /* Dark, non-intrusive Border */
+            
+            /* Text Colors */
+            --text-color-light: #e0e0e0; 
+            --text-color-muted: #9aa5b6; 
+            --text-color-dark: #212529; 
+
+            /* Accent Colors */
+            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
+            --accent-hover: #4f46e5;
+            
+            /* Status Colors (Muted for Dark Mode) */
+            --success-color: #34d399; /* Mint Green */
+            --danger-color: #fca5a5; /* Coral Red */
+            --warning-color: #fde047; /* Pale Yellow */
+
+            --table-header-bg: #2a3547;
+            --table-hover-bg: #2a3547;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color-light);
+            padding: 2rem 0;
+        }
+
+        /* Container */
+        .overwatch-container { 
+            background: var(--bg-secondary); 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color-light);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            margin-top: 3rem; 
+            padding: 2.5rem; 
+        }
+
+        /* Title */
+        .page-title {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        
+        /* Table Styling */
+        .table-admin {
+            background: var(--bg-primary); 
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .table-admin thead {
+            background: var(--table-header-bg) !important;
+            color: var(--text-color-muted);
+        }
+        
+        .table-admin th {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .table-admin td {
+            border-color: var(--border-color);
+            color: var(--text-color-light);
+            vertical-align: middle;
+            padding: 1rem;
+        }
+        
+        .table-admin tbody tr:hover {
+            background-color: var(--table-hover-bg);
+            cursor: default;
+        }
+        
+        /* Status Badges */
+        .badge-status {
+            border-radius: 6px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-accepted { 
+            background-color: var(--success-color); 
+            color: var(--text-color-dark); /* Dark text on bright badge */
+        }
+        .status-pending { 
+            background-color: var(--warning-color); 
+            color: var(--text-color-dark); 
+        }
+        .status-rejected { 
+            background-color: var(--danger-color); 
+            color: var(--text-color-dark); 
+        }
+        
+        /* Logout Button */
+        .btn-outline-exit {
+            border: 1px solid var(--border-color);
+            color: var(--text-color-muted);
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-outline-exit:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: #171d28;
+        }
+        
     </style>
 </head>
 <body>
     <div class="container">
         <div class="overwatch-container shadow-lg">
-            <h1 class="text-center mb-4" style="color: var(--disney-blue);"><i class="fas fa-eye me-2"></i>Master Oversight Panel</h1>
+            <h1 class="text-center mb-5 page-title"><i class="fas fa-chart-bar me-2"></i>Global Appointment Oversight</h1>
             
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle table-admin">
+                    <thead>
                         <tr>
                             <th>Patient</th>
-                            <th>Assigned Healer</th>
+                            <th>Assigned Doctor</th>
                             <th>Current Status</th>
                             <th>Problem Overview</th>
-                            <th>Date</th>
+                            <th>Date Requested</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for appt in appointments %}
                         <tr>
-                            <td><strong>{{ appt.patient.username }}</strong></td>
+                            <td class="fw-bold">{{ appt.patient.username }}</td>
                             <td>Dr. {{ appt.doctor.username }}</td>
                             <td>
                                 <span class="badge badge-status 
-                                    {% if appt.status == 'accepted' %}bg-success
-                                    {% elif appt.status == 'rejected' %}bg-danger
-                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {% if appt.status == 'accepted' %}status-accepted
+                                    {% elif appt.status == 'rejected' %}status-rejected
+                                    {% else %}status-pending{% endif %}">
                                     {{ appt.status|upper }}
                                 </span>
                             </td>
-                            <td><small>{{ appt.problem|truncatechars:50 }}</small></td>
-                            <td class="text-muted">{{ appt.created_at|date:"Y-m-d" }}</td>
+                            <td style="color: var(--text-color-muted);"><small>{{ appt.problem|truncatechars:50 }}</small></td>
+                            <td style="color: var(--text-color-muted);">{{ appt.created_at|date:"Y-m-d" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center">No appointments found in the magic logs.</td>
+                            <td colspan="5" class="text-center py-4" style="color: var(--text-color-muted);">
+                                <i class="fas fa-clipboard-list me-2"></i>No consultation requests currently pending review.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             <div class="text-center mt-3">
-                <a href="{% url 'logout' %}" class="btn btn-outline-secondary">exit and logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-exit">
+                    <i class="fas fa-door-open me-2"></i>Exit and Logout
+                </a>
             </div>
         </div>
     </div>

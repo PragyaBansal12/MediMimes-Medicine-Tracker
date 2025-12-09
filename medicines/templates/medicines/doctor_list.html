@@ -2,42 +2,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MediMimes Healers</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-    :root { --disney-blue: #1a3e6f; --disney-gold: #ffd700; --disney-purple: #6a0dad; }
-    body { background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%); min-height: 100vh; font-family: 'Quicksand', sans-serif; color: #fff; }
-    .dashboard-container { background: rgba(255, 255, 255, 0.95); border-radius: 25px; border: 3px solid var(--disney-gold); color: #333; margin-top: 3rem; }
-    .btn-magical { background: linear-gradient(135deg, var(--disney-purple) 0%, var(--disney-blue) 100%); border: 2px solid var(--disney-gold); color: white; border-radius: 25px; width: 100%; }
-    .navbar-disney { background: linear-gradient(135deg, var(--disney-blue) 0%, var(--disney-purple) 100%); border-bottom: 3px solid var(--disney-gold); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediMimes Professionals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (DOCTOR LIST) ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            /* Primary Dark Blue Palette (Consistent with Dashboard) */
+            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
+            --bg-secondary: #1d2534; /* Card/Section Background */
+            --border-color: #384050; /* Dark, non-intrusive Border */
+            
+            /* Text Colors */
+            --text-color-light: #e0e0e0; 
+            --text-color-muted: #9aa5b6; 
+            --text-color-dark: #212529; 
+
+            /* Accent Colors */
+            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
+            --accent-hover: #4f46e5;
+        }
+
+        body { 
+            background: var(--bg-primary); 
+            min-height: 100vh; 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-color-light); 
+        }
+
+        /* --- Navbar --- */
+        .navbar-modern { 
+            background: var(--bg-secondary); 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: 700;
+        }
+
+        /* --- Main Container --- */
+        .dashboard-container { 
+            background: var(--bg-secondary); 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color-light);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            margin-top: 3rem; 
+        }
+        
+        /* --- Titles --- */
+        .page-title {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        
+        /* --- Doctor Card --- */
+        .doctor-card {
+            background: var(--bg-primary); 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        .doctor-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .doctor-icon {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        .doctor-card h4 {
+            color: var(--text-color-light);
+            font-weight: 600;
+        }
+        .doctor-card p {
+            color: var(--text-color-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- Button --- */
+        .btn-modern { 
+            background-color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color-light);
+            border-radius: 8px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-modern:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+    </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark navbar-disney">
-    <div class="container">
-      <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="fas fa-magic me-2"></i>MediMimes</a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="dashboard-container p-5">
-      <h1 class="text-center mb-4" style="color: var(--disney-blue);">Magical Healers ✨</h1>
-      <div class="row">
-        {% for profile in doctors %}
-        <div class="col-md-6 mb-3">
-          <div class="border rounded p-4 text-center bg-white shadow-sm">
-            <i class="fas fa-user-md fa-3x text-primary mb-2"></i>
-            <h4>{{ profile.user.username }}</h4>
-            <p class="text-muted">{{ profile.specialty }}</p>
-            <a href="{% url 'book_now' profile.user.id %}" class="btn btn-magical">Book Appointment</a>
-          </div>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-modern">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="fas fa-prescription-bottle-alt me-2"></i>MediMimes</a>
         </div>
-        {% endfor %}
-      </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-container p-5">
+            <h1 class="text-center mb-5 page-title"><i class="fas fa-user-md me-2"></i>Find Professionals</h1>
+            <div class="row">
+                {% for profile in doctors %}
+                <div class="col-md-6 mb-4">
+                    <div class="doctor-card shadow-sm">
+                        <i class="fas fa-user-md fa-3x doctor-icon"></i>
+                        <h4>Dr. {{ profile.user.username }}</h4>
+                        <p class="text-muted">{{ profile.specialty|default:"General Practitioner" }}</p>
+                        <a href="{% url 'book_now' profile.user.id %}" class="btn btn-modern">
+                            <i class="fas fa-calendar-check me-2"></i>Request Consultation
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

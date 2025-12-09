@@ -141,66 +141,70 @@ def _create_google_events(user, med, service=None):
     return new_event_ids
 
 
-
-
-# ===========================
-# OTP AUTHENTICATION VIEWS 
-# ===========================
-
 def signup_view(request):
-    """Redirects to the new OTP request flow."""
-    # This ensures any old links to 'signup/' use the new flow
-    return redirect('otp_signup_request')
-
-
-def otp_signup_request(request):
-    """Step 1: Get email from user, send OTP, and store email in session."""
-    if request.method == "POST":
-        email = request.POST.get('email', '').lower()
-        
-        if not email:
-            messages.error(request, "Email is required.")
-            return render(request, "medicines/signup.html")
-
-        # Check if user already exists
-        if User.objects.filter(email=email).exists() or User.objects.filter(username=email).exists():
-            messages.error(request, "An account with this email already exists.")
-            return redirect('login') 
-        
-        # 1. Generate and Save OTP
-        otp_code = OTP.generate_otp()
-        OTP.objects.update_or_create(
-            email=email,
-            defaults={'otp_code': otp_code} # save() handles expiry_time
-        )
-        
-        # 2. Send Email
-        try:
-            send_mail(
-                'MediMimes: Your Signup Verification Code',
-                f'Your One-Time Passcode (OTP) for MediMimes registration is: {otp_code}. It is valid for 5 minutes.',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
-            # 3. Store email in session to verify in the next step
-            request.session['verification_email'] = email
-            messages.success(request, f"A 6-digit code has been sent to {email}.")
-            return redirect('otp_verify')
-        except Exception as e:
-            print(f"Error sending email: {e}")
-            messages.error(request, "Failed to send verification email. Check your settings and try again.")
-            return render(request, "medicines/signup.html", {'email': email})
-
+    """
+    Renders the signup page gateway.
+    Handles GET requests to show UI (Manual form + Google Button).
+    Google initiation happens directly via the template tag.
+    """
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
     return render(request, "medicines/signup.html")
 
+def otp_signup_request(request):
+    """Step 1: Get manual form data and send OTP. Targeted by form action."""
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email', '').lower()
+        password = request.POST.get('password')
+        
+        # 1. Validation before logic execution
+        if not all([username, email, password]):
+            messages.error(request, "All magical fields are required!")
+            return redirect('signup')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken.")
+            return redirect('signup')
+            
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered. Try Logging in.")
+            return redirect('login') 
+
+        # 2. Generate and Save OTP Registry
+        otp_code = OTP.generate_otp()
+        OTP.objects.update_or_create(email=email, defaults={'otp_code': otp_code})
+        
+        # 3. Secure Session Storage
+        request.session['reg_username'] = username
+        request.session['reg_email'] = email
+        request.session['reg_password'] = password 
+
+        # 4. Email Delivery
+        try:
+            send_mail(
+                'MediMimes: Verification Code',
+                f'Your magic code: {otp_code}',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+            )
+            messages.success(request, f"Verification code sent to {email}.")
+            return redirect('otp_verify')
+        except Exception:
+            messages.error(request, "Courier failed. Check email settings.")
+            return redirect('signup')
+
+    return redirect('signup')
 
 def otp_verify(request):
-    """Step 2: Verify OTP and complete user registration."""
-    email = request.session.get('verification_email')
+    """Step 2: Verify OTP and complete secure user registration."""
+    email = request.session.get('reg_email')
+    username = request.session.get('reg_username')
+    raw_password = request.session.get('reg_password')
 
     if not email:
-        messages.error(request, "Please request a verification code first.")
+        messages.error(request, "Session expired. Please start registration again.")
         return redirect('otp_signup_request')
 
     if request.method == "POST":
@@ -209,37 +213,27 @@ def otp_verify(request):
         try:
             otp_entry = OTP.objects.get(email=email)
         except OTP.DoesNotExist:
-            messages.error(request, "Invalid or expired verification attempt. Please request a new code.")
             return redirect('otp_signup_request')
 
-        # 1. Check OTP validity and expiry
         if not otp_entry.is_valid():
-            messages.error(request, "The verification code has expired. Please request a new one.")
+            messages.error(request, "The code has expired.")
             otp_entry.delete()
             return redirect('otp_signup_request')
 
         if submitted_otp == otp_entry.otp_code:
-            # 2. OTP is valid, register the user
             
-            # Use email for username, ensuring uniqueness
-            username_base = email.split('@')[0]
-            username = username_base
-            counter = 1
-            while User.objects.filter(username=username).exists():
-                username = f"{username_base}{counter}"
-                counter += 1
-            random_password=get_random_string(length=32)    
             user = User.objects.create_user(
                 username=username, 
                 email=email, 
-                password=random_password # Use a random password since none was collected
+                password=raw_password # Auto-hashed by Django
             )
-            user.is_active = True
             user.save()
             
-            # 3. Clean up and Log in
+            # 3. Clean up session and log in
             otp_entry.delete()
-            del request.session['verification_email']
+            del request.session['reg_username']
+            del request.session['reg_email']
+            del request.session['reg_password']
             
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, "Registration successful! Welcome to MediMimes.")
@@ -250,7 +244,6 @@ def otp_verify(request):
     
     return render(request, "medicines/otp_verify.html", {'email': email})
 
-
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -259,7 +252,7 @@ def login_view(request):
         
         user = authenticate(request, username=username, password=password)
         if user:
-            # ⭐ Role Gatekeeping: Matches Registry Authorized Role
+            
             try:
                 actual_role = user.profile.role
             except Exception:
@@ -291,9 +284,7 @@ def logout_view(request):
     return redirect('login')
 
 
-# ===========================
-# CRUD VIEWS (MODIFIED)
-# ===========================
+
 @login_required
 def medication_list(request):
     meds = Medication.objects.filter(user=request.user)
@@ -896,6 +887,22 @@ def chatbot_view(request):
             return JsonResponse({'response': f'Error: {str(e)}'})
     return JsonResponse({'response': 'Invalid request method'}, status=400)
 
+def get_patient_stats(user):
+    """A systematic calculation tool to pull data logs for standard patient review."""
+    from datetime import date, timedelta
+    logs = DoseLog.objects.filter(user=user)
+    total = logs.count()
+    taken = logs.filter(status='taken').count()
+    adherence = round((taken / total) * 100, 1) if total else 0
+
+    # Detailed medical history for doctor reflection
+    detailed_history = logs.order_by('-scheduled_time')[:10] 
+
+    return {
+        'adherence': adherence,
+        'detailed_history': detailed_history
+    }
+
 @login_required
 def doctor_list(request):
     """Lists all available doctors for the patient to choose from."""
@@ -921,34 +928,35 @@ def book_appointment(request, doctor_id):
     return render(request, 'medicines/booking_form.html', {'doctor': doctor_user})
 
 
-
-@login_required
 # medicines/views.py
 
 @login_required
 def doctor_dashboard(request):
-    """Systematic dashboard for Healers to view profiles and user records."""
-    # Authorization Gate
+    """Refined dashboard to audit all patient statuses (Pending/Accepted/Rejected)."""
+    # 1. Authorize the Doctor Registry
     try:
         profile = request.user.profile
         if profile.role != 'doctor':
             return redirect('dashboard')
-    except Exception:
+    except UserProfile.DoesNotExist:
         return redirect('dashboard')
 
-    # Systematic retrieval of requests addressed to this doctor
-    incoming_requests = Appointment.objects.filter(doctor=request.user, status='pending')
-    
-    # Retrieve history of already processed/accepted patients for systematic review
-    patient_history = Appointment.objects.filter(doctor=request.user, status='accepted').order_by('-created_at')
+    # 2. Fetch Incoming Requests (Only Pending)
+    # These include health statistics badges for clinical review
+    requests = Appointment.objects.filter(doctor=request.user, status='pending')
+    for appt in requests:
+        appt.patient_stats = get_patient_stats(appt.patient)
+
+    # 3. Fetch Full Systematic Archive (Exclude Pending)
+    # This automatically includes processed 'accepted' and 'rejected' records
+    processed_history = Appointment.objects.filter(doctor=request.user).exclude(status='pending').order_by('-created_at')
 
     context = {
         'doctor_profile': profile,
-        'requests': incoming_requests,
-        'history': patient_history,
+        'requests': requests,
+        'history': processed_history,
     }
     return render(request, 'medicines/doctor_dashboard.html', context)
-
 @login_required
 def respond_to_request(request, appt_id, action):
     """Doctor logic to confirm or deny an audience."""
@@ -992,3 +1000,4 @@ def admin_overwatch(request):
     all_appointments = Appointment.objects.all().order_by('-created_at')
     
     return render(request, 'medicines/admin_overwatch.html', {'appointments': all_appointments})
+

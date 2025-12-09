@@ -2,34 +2,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Consultation Request</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root { --disney-blue: #1a3e6f; --disney-gold: #ffd700; --disney-purple: #6a0dad; }
-    body { background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%); min-height: 100vh; font-family: 'Quicksand', sans-serif; color: #fff; }
-    .dashboard-container { background: rgba(255, 255, 255, 0.95); border-radius: 25px; border: 3px solid var(--disney-gold); color: #333; margin-top: 5rem; }
-    .btn-magical { background: linear-gradient(135deg, var(--disney-purple) 0%, var(--disney-blue) 100%); border: 2px solid var(--disney-gold); color: white; border-radius: 25px; width: 100%; padding: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (CONSULTATION FORM) ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            /* Primary Dark Blue Palette (Consistent) */
+            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
+            --bg-secondary: #1d2534; /* Card/Section Background */
+            --border-color: #384050; /* Dark, non-intrusive Border */
+            
+            /* Text Colors */
+            --text-color-light: #e0e0e0; 
+            --text-color-muted: #9aa5b6; 
+            --text-color-dark: #212529; 
+            --text-color-input: #f5f5f5;
+
+            /* Accent Colors */
+            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
+            --accent-hover: #4f46e5;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container */
+        .form-container { 
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color-light);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Title */
+        .page-title {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        
+        .text-muted {
+            color: var(--text-color-muted) !important;
+        }
+
+        /* Input Styling */
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: var(--bg-primary); /* Dark input field */
+            color: var(--text-color-input);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-color-muted);
+            opacity: 0.7;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.3);
+            background: #171d28;
+            color: var(--text-color-input);
+        }
+
+        /* Primary Button */
+        .btn-primary-modern { 
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--text-color-light);
+            border-radius: 8px; 
+            width: 100%; 
+            padding: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-modern:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+    </style>
 </head>
 <body>
-  <div class="container d-flex justify-content-center">
-    <div class="dashboard-container p-5 w-75">
-      <h2 class="text-center" style="color: var(--disney-blue);">Consultation Spell ✨</h2>
-      <p class="text-center text-muted">Meeting with Dr. {{ doctor.username }}</p>
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label">Magical History / Age</label>
-          <input type="text" name="details" class="form-control" placeholder="Brief info..." required>
+    <div class="container d-flex justify-content-center">
+        <div class="form-container p-5 w-75" style="max-width: 500px;">
+            <h2 class="text-center mb-1 page-title"><i class="fas fa-stethoscope me-2"></i>Consultation Request</h2>
+            <p class="text-center text-muted mb-4">Requesting appointment with Dr. {{ doctor.username }}</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label" for="details-input">Brief History / Age</label>
+                    <input type="text" name="details" class="form-control" id="details-input" placeholder="Age, brief medical history, known conditions..." required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label" for="problem-input">Primary Concern</label>
+                    <textarea name="problem" class="form-control" rows="4" id="problem-input" placeholder="Describe your symptoms or reason for consultation..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary-modern">
+                    <i class="fas fa-paper-plane me-2"></i>Send Request
+                </button>
+            </form>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Problem Concern</label>
-          <textarea name="problem" class="form-control" rows="4" placeholder="What's wrong healer?..." required></textarea>
-        </div>
-        <button type="submit" class="btn btn-magical">Send Magical Request</button>
-      </form>
     </div>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

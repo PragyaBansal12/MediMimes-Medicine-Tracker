@@ -1,22 +1,95 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Request Delivered</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root { --disney-blue: #1a3e6f; --disney-gold: #ffd700; --disney-purple: #6a0dad; }
-    body { background: linear-gradient(135deg, #1a3e6f 0%, #6a0dad 50%, #d4002a 100%); min-height: 100vh; font-family: 'Quicksand', sans-serif; color: #fff; display: flex; align-items: center; justify-content: center; }
-    .dashboard-container { background: rgba(255, 255, 255, 0.95); border-radius: 25px; border: 3px solid var(--disney-gold); color: #333; text-align: center; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Delivered</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==== DARK BLUE/INDIGO PROFESSIONAL THEME (CONFIRMATION) ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            /* Primary Dark Blue Palette (Consistent) */
+            --bg-primary: #121824; /* Deep Charcoal/Indigo Background */
+            --bg-secondary: #1d2534; /* Card/Section Background */
+            --border-color: #384050; /* Dark, non-intrusive Border */
+            
+            /* Text Colors */
+            --text-color-light: #e0e0e0; 
+            --text-color-dark: #212529; /* For text on the light card */
+
+            /* Accent Colors */
+            --accent-color: #6366f1; /* Vibrant Indigo/Violet */
+            --accent-hover: #4f46e5;
+            
+            /* Success Color */
+            --success-color: #34d399; 
+        }
+
+        body { 
+            background: var(--bg-primary); 
+            min-height: 100vh; 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-color-light); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        /* Container (Card) */
+        .confirmation-container { 
+            background: var(--bg-secondary); 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color-light); /* Ensure text is light inside the dark card */
+            text-align: center; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            max-width: 450px;
+        }
+
+        .confirmation-title {
+            color: var(--success-color); /* Highlight the success message */
+            font-weight: 700;
+        }
+
+        /* Primary Button */
+        .btn-primary-modern { 
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--text-color-light);
+            border-radius: 8px; /* Consistent rounding */
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-modern:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-accent {
+            color: var(--success-color);
+        }
+
+    </style>
 </head>
 <body>
-  <div class="dashboard-container p-5">
-    <i class="fas fa-paper-plane fa-4x text-warning mb-4"></i>
-    <h1 style="color: var(--disney-blue);">Sent to the Realms!</h1>
-    <p>Your request is being reviewed by <strong>Dr. {{ doctor.username }}</strong>.</p>
-    <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3" style="background: var(--disney-purple); border-radius: 20px;">Back to dashboard</a>
-  </div>
+    <div class="confirmation-container p-5">
+        <i class="fas fa-check-circle fa-4x icon-accent mb-4"></i>
+        
+        <h1 class="confirmation-title mb-3">Request Sent!</h1>
+        
+        <p class="mb-4">Your *consultation request* has been successfully delivered and is now being reviewed by *Dr. {{ doctor.username }}*.</p>
+        
+        <a href="{% url 'dashboard' %}" class="btn btn-primary-modern mt-3">
+            <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+        </a>
+    </div>
 </body>
 </html>

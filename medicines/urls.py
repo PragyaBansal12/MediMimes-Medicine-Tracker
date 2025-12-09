@@ -1,4 +1,5 @@
 from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -53,4 +54,5 @@ urlpatterns = [
     path('my-requests/', views.patient_requests, name='patient_requests'),
 
     path('overwatch/', views.admin_overwatch, name='overwatch'),
+    path('accounts/', include('allauth.urls')),
 ]

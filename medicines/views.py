@@ -27,8 +27,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 
-# import from chatbot package
-from chatbot import get_chatbot_response
+
 
 from .models import UserProfile, Appointment, User
 
@@ -42,6 +41,7 @@ from django.http import JsonResponse
 
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
+from django import forms
 
 
 logger = logging.getLogger(__name__)
@@ -1014,6 +1014,68 @@ def admin_overwatch(request):
     all_appointments = Appointment.objects.all().order_by('-created_at')
     
     return render(request, 'medicines/admin_overwatch.html', {'appointments': all_appointments})
+
+class AdminDoctorCreationForm(forms.Form):
+    """Form used by the Admin to create a new Doctor account."""
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'Unique Username'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Login Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Temporary Password'}))
+    specialty = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'e.g., General Medicine'}))
+    age = forms.IntegerField(min_value=18, widget=forms.NumberInput(attrs={'placeholder': 'Doctor Age'}))
+    address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Full Address'}))
+    
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email
+
+
+@login_required
+def admin_authorize_doctor(request):
+    """
+    Handles the Admin's creation of a new Doctor (Role 1).
+    """
+    # Security: Only Admins can access
+    try:
+        if request.user.profile.role != 'admin' and not request.user.is_superuser:
+            messages.error(request, "Access Denied. Admin privileges required!")
+            return redirect('dashboard')
+    except Exception:
+        return redirect('dashboard')
+
+    form = AdminDoctorCreationForm()
+
+    if request.method == 'POST':
+        form = AdminDoctorCreationForm(request.POST)
+        if form.is_valid():
+            # 1. Create User (Password is auto-hashed securely)
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
+            )
+            user.save()
+
+            # 2. Create the Doctor's UserProfile and set all details and the 'doctor' role
+            UserProfile.objects.create(
+                user=user,
+                role='doctor',
+                specialty=form.cleaned_data['specialty'],
+                # Note: If you want to use age/address, you must add these fields to your UserProfile model in models.py first.
+            )
+
+            messages.success(request, f"Doctor {user.username} successfully created. They can now log in.")
+            return redirect('overwatch')
+
+    # For both GET and invalid POST
+    return render(request, 'medicines/doctor_authorization_form.html', {'form': form})
 
 from .models import Symptom 
 @login_required

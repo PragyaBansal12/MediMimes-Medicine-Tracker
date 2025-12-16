@@ -8,39 +8,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ==== LIGHT, CLEAN, AND MODERN MEDICAL THEME (DOCTOR PORTAL) ==== */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        /* ==== CLEAN MODERN MEDICAL UI (ADAPTED FOR DOCTOR DASHBOARD) - TEAL ACCENTS, WHITE BG ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            /* Primary Light Palette */
-            --bg-primary: #f8f9fa; /* Light Grey/White Background */
-            --bg-secondary: #ffffff; /* Card/Section Background (White) */
-            --border-color: #e0e6eb; /* Soft light grey Border */
+            /* Primary Light/White Palette */
+            --bg-primary: #f8f9fa; /* Very Light Grey/White Background */
+            --bg-secondary: #ffffff; /* Card/Section Pure White Background */
+            --border-color: #dee2e6; /* Light Grey Border */
             
             /* Text Colors */
-            --text-color-dark: #212529; 
-            --text-color-muted: #6c757d; 
-            --text-color-light: #ffffff; 
+            --text-color-dark: #212529; /* Standard Dark Text */
+            --text-color-muted: #6c757d; /* Muted Grey Text */
+            --text-color-light: #ffffff; /* Text on accent buttons */
 
-            /* Accent Colors */
-            --accent-color: #007bff; /* Vibrant primary blue */
-            --accent-hover: #0056b3;
+            /* Accent Colors (Teal/Aqua Medical Theme) */
+            --accent-color: #20c997; /* Vibrant Teal/Aqua for titles/accents */
+            --accent-hover: #17a97e; /* Darker Teal for Hover */
+            --shadow-color-light: rgba(0, 0, 0, 0.08); /* Subtle Shadow */
             
-            /* Status Colors */
-            --success-color: #28a745; /* Green */
-            --danger-color: #dc3545; /* Red */
-            --info-color: #17a2b8; /* Cyan */
+            /* Status Colors (Adapted for Light Mode) */
+            --success-color: #28a745; /* Standard Success Green */
+            --danger-color: #dc3545; /* Standard Danger Red */
+            --info-color: #007bff; /* Standard Info Blue */
             
-            --table-header-bg: #f1f5f9; /* Lighter header background */
-            --button-light-text: #ffffff;
-            --table-hover-bg: #f8fcfd;
-            
-            font-family: 'Poppins', sans-serif; 
+            --table-header-bg: #e9ecef; /* Light grey table header */
         }
 
         body { 
             background: var(--bg-primary); 
             min-height: 100vh; 
+            font-family: 'Inter', sans-serif; 
             color: var(--text-color-dark); 
             padding-bottom: 3rem;
         }
@@ -53,30 +51,30 @@
         .btn-logout {
             border: 1px solid var(--border-color);
             color: var(--text-color-muted) !important;
+            background: var(--bg-secondary);
             border-radius: 8px;
             transition: all 0.2s;
-            background: var(--bg-secondary);
         }
         .btn-logout:hover {
             border-color: var(--danger-color);
             color: var(--danger-color) !important;
-            background: #ffebeb;
+            background: #f1f1f1;
         }
 
-        /* --- Main Container --- */
+        /* --- Main Container (sanctum-container adapted to light theme) --- */
         .sanctum-container { 
             background: var(--bg-secondary); 
             border-radius: 12px; 
             border: 1px solid var(--border-color); 
-            color: var(--text-color-dark);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            color: var(--text-color-dark); /* Changed to dark text */
+            box-shadow: 0 6px 20px var(--shadow-color-light); /* Lighter shadow */
             margin: 2rem 0; 
             padding: 2.5rem; 
         }
         
         /* --- Doctor Profile Card --- */
         .profile-card { 
-            background: var(--table-header-bg); 
+            background: #f8f8ff; /* Very light subtle background */
             color: var(--text-color-dark); 
             border-radius: 10px; 
             padding: 1.5rem; 
@@ -86,112 +84,102 @@
             color: var(--accent-color);
         }
         .profile-card .specialty {
-            color: var(--success-color); /* Highlight specialty in green */
-            font-weight: 500;
+             color: var(--success-color); /* Highlight specialty in green */
         }
-        .profile-card h3 {
-             color: var(--text-color-dark);
+        /* Profile Image Border Adjustment */
+        .profile-card img {
+            border-color: var(--accent-color) !important; /* Teal border for photo */
+        }
+        /* Fallback icon border */
+        .profile-card .rounded-circle {
+            border: 2px solid var(--accent-color) !important;
+            background: var(--bg-primary) !important;
         }
 
         /* --- Patient Consultation Card (Pending Requests) --- */
         .pending-title {
-            color: var(--text-color-dark);
+            color: var(--text-color-dark); /* Dark title */
             font-weight: 600;
         }
         .patient-card { 
             border: 1px solid var(--border-color); 
-            border-left: 5px solid var(--accent-color); /* Strong left accent */
+            border-left: 5px solid var(--accent-color); /* Strong left accent (Teal) */
             border-radius: 8px; 
-            background: var(--bg-secondary);
+            background: var(--bg-secondary); /* White background */
             color: var(--text-color-dark);
-            transition: all 0.2s;
+            transition: box-shadow 0.3s;
         }
         .patient-card:hover {
-             box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+             box-shadow: 0 0 10px var(--shadow-color-light);
         }
         
         /* Patient Stats */
         .patient-card h5 {
-            color: var(--accent-color); /* Patient name highlight */
-            font-weight: 600;
+            color: var(--info-color); /* Patient name highlight (Blue) */
         }
         .patient-card strong {
-            color: var(--text-color-muted);
+             color: var(--text-color-muted);
         }
         .badge-adherence {
             background-color: var(--info-color) !important;
-            color: var(--button-light-text) !important;
+            color: var(--text-color-light) !important; /* White text on blue badge */
         }
 
-        /* Action Buttons (Accept/Reject) */
-        .btn-success-clean { /* Custom class for success button style */
+        /* Action Buttons (Accept/Reject) - Using standard Bootstrap colors */
+        .btn-success {
             background-color: var(--success-color);
             border-color: var(--success-color);
-            color: var(--button-light-text);
+            color: var(--text-color-light); /* White text */
             font-weight: 600;
         }
-        .btn-success-clean:hover {
-            background-color: #1e7e34;
-            border-color: #1e7e34;
-            color: var(--button-light-text);
-        }
-        .btn-danger-clean { /* Custom class for danger button style */
+        .btn-danger {
             background-color: var(--danger-color);
             border-color: var(--danger-color);
-            color: var(--button-light-text);
+            color: var(--text-color-light); /* White text */
             font-weight: 600;
-        }
-        .btn-danger-clean:hover {
-            background-color: #bd2130;
-            border-color: #bd2130;
-            color: var(--button-light-text);
         }
 
         /* Patient History/Recent Activity */
         .activity-reflection {
-            background: var(--table-header-bg); /* Lighter box for history */
+            background: #f1f1f1; /* Light grey box for history */
             border: 1px solid var(--border-color);
         }
         .activity-reflection h6 {
             color: var(--text-color-muted) !important;
         }
+        
+        /* Audit Status Badges (Using standard Bootstrap colors) */
+        .audit-accepted { background-color: var(--success-color); color: var(--text-color-light); }
+        .audit-rejected { background-color: var(--danger-color); color: var(--text-color-light); }
         .history-status-badge {
-            font-size: 0.75rem;
-            padding: 0.35em 0.65em;
+             font-size: 0.7rem;
         }
         
         /* --- Audit Archive Table --- */
         .history-table { 
             border-radius: 8px; 
             overflow: hidden; 
-            background: var(--bg-secondary); 
+            background: var(--bg-secondary); /* White background for table container */
             border: 1px solid var(--border-color);
         }
         
         .history-table thead {
-            background: var(--table-header-bg) !important;
-            color: var(--text-color-muted);
+            background: var(--table-header-bg) !important; /* Light header background */
+            color: var(--text-color-dark); /* Dark text on light header */
         }
         
         .history-table th {
             border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
         }
         
         .history-table td {
             border-color: var(--border-color);
-            color: var(--text-color-dark);
+            color: var(--text-color-dark); /* Dark text in table body */
         }
         
         .history-table tbody tr:hover {
-            background: var(--table-hover-bg);
+            background: #f5f5f5; /* Light hover background */
         }
-        
-        /* Audit Status Badges */
-        .audit-accepted { background-color: var(--success-color); color: var(--button-light-text); }
-        .audit-rejected { background-color: var(--danger-color); color: var(--button-light-text); }
-        .audit-pending { background-color: #ffc107; color: var(--text-color-dark); }
-
     </style>
 </head>
 <body>
@@ -207,9 +195,9 @@
             
             <div class="profile-card mb-4 d-flex align-items-center shadow-sm">
                 {% if doctor_profile.photo %}
-                    <img src="{{ doctor_profile.photo.url }}" class="rounded-circle border border-2 border-primary me-3" width="80" height="80">
+                    <img src="{{ doctor_profile.photo.url }}" class="rounded-circle border border-2 border-warning me-3" width="80" height="80">
                 {% else %}
-                    <div class="rounded-circle bg-light p-3 me-3" style="border: 2px solid var(--accent-color);"><i class="fas fa-user-md fa-2x"></i></div>
+                    <div class="rounded-circle bg-dark p-3 me-3" style="border: 2px solid var(--accent-color); background: var(--bg-primary) !important;"><i class="fas fa-user-md fa-2x"></i></div>
                 {% endif %}
                 <div>
                     <h3 class="mb-0">Dr. {{ user.username }}</h3>
@@ -226,15 +214,15 @@
                             <div>
                                 <h5>Patient: {{ appt.patient.username }}</h5>
                                 <p class="mb-2"><strong>Problem:</strong> {{ appt.problem }}</p>
-                                <span class="badge badge-adherence p-2 mb-2 rounded-pill">
+                                <span class="badge badge-adherence p-2 mb-2">
                                     Adherence Rate: {{ appt.patient_stats.adherence }}%
                                 </span>
                             </div>
                             <div class="d-flex gap-2">
-                                <a href="{% url 'respond' appt.id 'accept' %}" class="btn btn-success-clean btn-sm rounded-pill">
+                                <a href="{% url 'respond' appt.id 'accept' %}" class="btn btn-success btn-sm rounded-pill">
                                     <i class="fas fa-check me-1"></i>Accept
                                 </a>
-                                <a href="{% url 'respond' appt.id 'reject' %}" class="btn btn-danger-clean btn-sm rounded-pill">
+                                <a href="{% url 'respond' appt.id 'reject' %}" class="btn btn-danger btn-sm rounded-pill">
                                     <i class="fas fa-times me-1"></i>Reject
                                 </a>
                             </div>
@@ -244,8 +232,8 @@
                             <h6 class="small fw-bold text-muted mb-2">Recent Medication Activity:</h6>
                             <div class="d-flex flex-wrap gap-2">
                                 {% for dose in appt.patient_stats.detailed_history %}
-                                    <span class="badge history-status-badge rounded-pill
-                                        {% if dose.status == 'taken' %}bg-success audit-accepted{% else %}bg-danger audit-rejected{% endif %}">
+                                    <span class="badge history-status-badge 
+                                        {% if dose.status == 'taken' %}audit-accepted{% else %}audit-rejected{% endif %}">
                                         {{ dose.status|title }} ({{ dose.scheduled_time|date:"H:i" }})
                                     </span>
                                 {% endfor %}
@@ -265,8 +253,8 @@
             <h4 class="pending-title mb-4">Consultation Archive (Processed Decisions)</h4>
             <div class="table-responsive history-table shadow-sm">
                 <table class="table table-hover mb-0">
-                    <thead>
-                        <tr style="background: var(--table-header-bg);">
+                    <thead class="table-dark" style="background: var(--table-header-bg) !important; color: var(--text-color-dark) !important;">
+                        <tr>
                             <th>Patient Name</th>
                             <th>Decision Status</th>
                             <th>Problem Summary</th>
@@ -276,7 +264,7 @@
                     <tbody>
                         {% for record in history %}
                         <tr>
-                            <td class="fw-bold" style="color: var(--accent-color);">{{ record.patient.username }}</td>
+                            <td class="fw-bold">{{ record.patient.username }}</td>
                             <td>
                                 <span class="badge rounded-pill p-2 w-75 
                                     {% if record.status == 'accepted' %}audit-accepted{% else %}audit-rejected{% endif %}">

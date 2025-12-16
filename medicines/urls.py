@@ -54,6 +54,7 @@ urlpatterns = [
     path('my-requests/', views.patient_requests, name='patient_requests'),
 
     path('overwatch/', views.admin_overwatch, name='overwatch'),
+    path('overwatch/authorize-doctor/', views.admin_authorize_doctor, name='admin_authorize_doctor'),
     path('accounts/', include('allauth.urls')),
 
     # symptom APIs

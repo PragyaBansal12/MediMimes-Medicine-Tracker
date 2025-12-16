@@ -49,6 +49,8 @@ INSTALLED_APPS = [
 
 	# Notification
 	'background_task',
+    
+	'widget_tweaks',
 ]
 
 AUTHENTICATION_BACKENDS = [
